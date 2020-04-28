@@ -51,8 +51,8 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :behold, Behold.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  username: "behold",
+  password: "beholdtest",
   database: "behold_dev",
   hostname: "localhost",
   pool_size: 10

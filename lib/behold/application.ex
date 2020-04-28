@@ -16,6 +16,9 @@ defmodule Behold.Application do
       # worker(Behold.Worker, [arg1, arg2, arg3]),
     ]
 
+    Observer.Cron.ScheduleChecks.start_link()
+    |> IO.inspect(label: "from start_link")
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Behold.Supervisor]

@@ -3,18 +3,18 @@ defmodule Observer.Check.HTTP do
 
   @interval 1_000
 
-  def start_link do
-    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
+  def start_link(check) do
+    GenServer.start_link(__MODULE__, check, name: String.to_atom("#{check.id}-#{Atom.to_string(check.type)}"))
   end
 
-  def init(:ok) do
-    Process.send_after(self(), :fire_check, @interval)
-    {:ok, nil}
+  def init(%{interval: interval} = check) do
+    Process.send_after(self(), :fire_check, interval)
+    {:ok, %{check: check}}
   end
 
-  def handle_info(:fire_check, state) do
-    IO.puts "foo"
-    Process.send_after(self(), :fire_check, @interval)
-    {:noreply, nil}
+  def handle_info(:fire_check, %{check: %{interval: interval}} = check) do
+    IO.puts "check_http"
+    Process.send_after(self(), :fire_check, interval)
+    {:noreply, %{check: check.check}}
   end
 end
