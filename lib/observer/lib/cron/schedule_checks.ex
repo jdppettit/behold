@@ -1,7 +1,7 @@
 defmodule Observer.Cron.ScheduleChecks do
   use GenServer
 
-  @interval 1_000
+  @interval 60_000
 
   def start_link do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
@@ -25,7 +25,6 @@ defmodule Observer.Cron.ScheduleChecks do
       case type do
         :http ->
           if is_nil(Process.whereis(String.to_atom("#{check.id}-#{Atom.to_string(check.type)}"))) do
-            IO.puts "Scheduling new gen server check"
             Observer.Check.HTTP.start_link(Map.from_struct(check))
           end
       end
