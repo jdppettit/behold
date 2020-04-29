@@ -1,7 +1,8 @@
 defmodule Observer.Cron.ScheduleChecks do
   use GenServer
 
-  @interval 60_000
+  #@interval 60_000
+  @interval 5_000
 
   def start_link do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
