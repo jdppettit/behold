@@ -28,6 +28,10 @@ defmodule Observer.Cron.ScheduleChecks do
           if is_nil(Process.whereis(String.to_atom("#{check.id}-#{Atom.to_string(check.type)}"))) do
             Observer.Check.HTTP.start_link(Map.from_struct(check))
           end
+        :ping ->
+          if is_nil(Process.whereis(String.to_atom("#{check.id}-#{Atom.to_string(check.type)}"))) do
+            Observer.Check.Ping.start_link(Map.from_struct(check))
+          end
       end
     end)
   end

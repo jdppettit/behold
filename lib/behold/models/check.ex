@@ -76,6 +76,8 @@ defmodule Behold.Models.Check do
     case Behold.Repo.all(query) do
       [_ | _] = checks ->
         {:ok, checks}
+      [] = checks ->
+        {:ok, checks}
       error ->
         {:error, :database_error}
     end
