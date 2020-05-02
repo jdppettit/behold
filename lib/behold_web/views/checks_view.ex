@@ -3,6 +3,12 @@ defmodule BeholdWeb.ChecksView do
 
   alias BeholdWeb.Views.Helpers
 
+  def render("check.json", %{check: check}) do
+    %{
+      check: Helpers.sanitize(check),
+    }
+  end
+
   def render("check_created.json", %{check: check}) do
     %{
       check: Helpers.sanitize(check),

@@ -1,7 +1,7 @@
 defmodule Observer.Check.Ping do
   use GenServer
 
-  alias Observer.Common.Ping
+  alias Observer.Common.{Ping, Common}
   alias Behold.Models.Value
 
   def start_link(check) do
@@ -28,5 +28,6 @@ defmodule Observer.Check.Ping do
         {:ok, changeset} = Value.create_changeset(:critical, id)
         {:ok, _} = Value.insert(changeset)
     end
+    Common.start_rollup(check)
   end
 end

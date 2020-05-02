@@ -22,5 +22,6 @@ defmodule BeholdWeb.Router do
   scope "/api/v1", BeholdWeb do
     pipe_through :api
     post "/check", ChecksController, :create
+    get "/check/:id", ChecksController, :get
   end
 end

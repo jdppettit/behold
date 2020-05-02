@@ -1,8 +1,9 @@
 defmodule Observer.Check.HTTP do
   use GenServer
 
-  alias Observer.Common.HTTP
+  alias Observer.Common.{HTTP, Common}
   alias Behold.Models.Value
+
 
   def start_link(check) do
     GenServer.start_link(__MODULE__, check, name: String.to_atom("#{check.id}-#{Atom.to_string(check.type)}"))
@@ -25,8 +26,9 @@ defmodule Observer.Check.HTTP do
         {:ok, changeset} = Value.create_changeset(:nominal, id)
         {:ok, _} = Value.insert(changeset)
       _ ->
-      {:ok, changeset} = Value.create_changeset(:critical, id)
-      {:ok, _} = Value.insert(changeset)
+        {:ok, changeset} = Value.create_changeset(:critical, id)
+        {:ok, _} = Value.insert(changeset)
     end
+    Common.start_rollup(check)
   end
 end

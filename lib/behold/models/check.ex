@@ -9,18 +9,19 @@ defmodule Behold.Models.Check do
     field :value, :string
     field :interval, :integer
     field :target, :string
+    field :state, CheckStateTypes
 
     timestamps()
   end
 
   def changeset(check, attrs) do
     check
-    |> cast(attrs,[:type, :value, :interval, :target])
+    |> cast(attrs, __schema__(:fields))
     |> validate_required([
       :type,
       :value,
       :interval,
-      :target
+      :target,
     ])
   end
 
@@ -80,6 +81,29 @@ defmodule Behold.Models.Check do
         {:ok, checks}
       error ->
         {:error, :database_error}
+    end
+  end
+
+  def update_check_state(check, new_state) do
+    check_struct = struct(%__MODULE__{}, check)
+    changeset = __MODULE__.changeset(check_struct, %{
+      state: new_state
+    })
+    case changeset.valid? do
+      true ->
+        Behold.Repo.update(changeset)
+        :ok
+      false ->
+        :error
+    end
+  end
+
+  def get_by_id(id) do
+    case Behold.Repo.get(__MODULE__, id) do
+      nil ->
+        {:error, :not_found}
+      model ->
+        {:ok, model}
     end
   end
 end

@@ -60,4 +60,20 @@ defmodule Behold.Models.Value do
         {:error, :database_error}
     end
   end
+
+  def get_recent_values_by_check_id(id, threshold \\ 3) do
+    query = from values in __MODULE__,
+      where: values.check_id == ^id,
+      order_by: [desc: values.inserted_at],
+      limit: ^threshold
+
+    case Behold.Repo.all(query) do
+      [_ | _] = values ->
+        {:ok, values}
+      [] = values ->
+        {:ok, values}
+      error ->
+        {:error, :database_error}
+    end
+  end
 end
