@@ -23,5 +23,8 @@ defmodule BeholdWeb.Router do
     pipe_through :api
     post "/check", ChecksController, :create
     get "/check/:id", ChecksController, :get
+    get "/checks", ChecksController, :get_all
+
+    get "/check/:id/values", ValuesController, :get
   end
 end

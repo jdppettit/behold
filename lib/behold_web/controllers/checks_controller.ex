@@ -58,6 +58,22 @@ defmodule BeholdWeb.ChecksController do
     end
   end
 
+  def get_all(conn, _params) do
+    with {:ok, models} <- Check.get_all_valid_checks() do
+      conn
+      |> render("checks.json", checks: models)
+    else
+      {:error, :not_found} ->
+        conn
+        |> put_status(404)
+        |> render("not_found.json", message: "Check not found")
+      _ ->
+        conn
+        |> put_status(500)
+        |> render("server_error.json", message: "Unexpected server error")
+    end
+  end
+
   def validate_type(type) do
     case type do
       "http" ->
