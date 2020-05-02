@@ -1,10 +1,13 @@
 defmodule Observer.Check.Ping do
   use GenServer
 
-  alias Observer.Common.{Ping, Common}
+  require Logger
+
+  alias Observer.Common.{Ping}
   alias Behold.Models.Value
 
   def start_link(check) do
+    Logger.debug("#{__MODULE__}: Starting Ping check for check #{check.id}")
     GenServer.start_link(__MODULE__, check, name: String.to_atom("#{check.id}-#{Atom.to_string(check.type)}"))
   end
 
@@ -28,6 +31,5 @@ defmodule Observer.Check.Ping do
         {:ok, changeset} = Value.create_changeset(:critical, id)
         {:ok, _} = Value.insert(changeset)
     end
-    Common.start_rollup(check)
   end
 end

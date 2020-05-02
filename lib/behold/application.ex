@@ -12,12 +12,13 @@ defmodule Behold.Application do
       supervisor(Behold.Repo, []),
       # Start the endpoint when the application starts
       supervisor(BeholdWeb.Endpoint, []),
+      %{
+        id: Observer.Supervisor.SchedulerSupervisor,
+        start: {Observer.Supervisor.SchedulerSupervisor, :start_link, [[]]}
+      }
       # Start your own worker by calling: Behold.Worker.start_link(arg1, arg2, arg3)
       # worker(Behold.Worker, [arg1, arg2, arg3]),
     ]
-
-    Observer.Cron.ScheduleChecks.start_link()
-    |> IO.inspect(label: "from start_link")
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

@@ -7,10 +7,4 @@ defmodule Observer.Common.Common do
     {int, _} = Integer.parse(string)
     {:ok, int}
   end
-
-  def start_rollup(check) do
-    if is_nil(Process.whereis(String.to_atom("#{check.id}-rollup"))) do
-      Rollup.start_link(check)
-    end
-  end
 end
