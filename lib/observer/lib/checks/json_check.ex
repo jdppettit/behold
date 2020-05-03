@@ -1,14 +1,14 @@
-defmodule Observer.Check.Ping do
+defmodule Observer.Check.JSON do
   require Logger
-  
-  use GenServer
-  use Observer.Common.CheckFramework, name: "Ping"
 
-  alias Observer.Common.{Ping}
+  use GenServer
+  use Observer.Common.CheckFramework, name: "JSON"
+
+  alias Observer.Common.{JSON}
   alias Behold.Models.Value
 
-  def do_check(%{target: target, id: id} = check) do
-    case Ping.ping(target) do
+  def do_check(%{value: value, target: target, id: id} = check) do
+    case JSON.get(target, value) do
       true ->
         {:ok, changeset} = Value.create_changeset(:nominal, id)
         {:ok, _} = Value.insert(changeset)
