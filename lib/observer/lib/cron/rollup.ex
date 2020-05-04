@@ -6,7 +6,6 @@ defmodule Observer.Cron.Rollup do
   alias Behold.Models.Value
   alias Behold.Models.Check
 
-  @interval 180_000
   @default_threshold 3
 
   def start_link(%{id: id} = check) do
@@ -17,16 +16,16 @@ defmodule Observer.Cron.Rollup do
     )
   end
 
-  def init(check) do
-    Logger.debug("#{__MODULE__}: Initializing gen server for rollup on check #{check.id}")
-    Process.send_after(self(), :rollup, @interval)
+  def init(%{interval: interval} = check) do
+    Logger.debug("#{__MODULE__}: Initializing gen server for rollup on check #{check.id} with interval #{interval*3}")
+    Process.send_after(self(), :rollup, interval*3)
     {:ok, %{check: check}}
   end
 
-  def handle_info(:rollup, check) do
+  def handle_info(:rollup, %{check: %{interval: interval}} = check) do
     Logger.debug("#{__MODULE__}: Running rollup logic on check #{check.check.id}")
     do_rollup(check.check)
-    Process.send_after(self(), :rollup, @interval)
+    Process.send_after(self(), :rollup, interval*3)
     {:noreply, check}
   end
 
