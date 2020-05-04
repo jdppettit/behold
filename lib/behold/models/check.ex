@@ -10,6 +10,9 @@ defmodule Behold.Models.Check do
     field :interval, :integer
     field :target, :string
     field :state, CheckStateTypes
+    field :name, :string
+    field :operation, CheckOperationTypes
+    field :comparison, :string
 
     timestamps()
   end

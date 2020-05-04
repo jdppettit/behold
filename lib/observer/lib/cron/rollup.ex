@@ -6,7 +6,7 @@ defmodule Observer.Cron.Rollup do
   alias Behold.Models.Value
   alias Behold.Models.Check
 
-  @interval 10_000
+  @interval 180_000
   @default_threshold 3
 
   def start_link(%{id: id} = check) do

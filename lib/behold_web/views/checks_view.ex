@@ -22,19 +22,7 @@ defmodule BeholdWeb.ChecksView do
     }
   end
 
-  def render("server_error.json", %{message: message}) do
-    %{
-      message: message
-    }
-  end
-
-  def render("invalid_parameters.json", %{message: message}) do
-    %{
-      message: message
-    }
-  end
-
-  def reder("invalid_parameters.json", %{message: message}) do
+  def render(_, %{message: message}) do
     %{
       message: message
     }

@@ -15,6 +15,10 @@ defmodule Behold.Application do
       %{
         id: Observer.Supervisor.SchedulerSupervisor,
         start: {Observer.Supervisor.SchedulerSupervisor, :start_link, [[]]}
+      },
+      %{
+        id: Observer.Supervisor.NotificationSupervisor,
+        start: {Observer.Supervisor.NotificationSupervisor, :start_link, [[]]}
       }
       # Start your own worker by calling: Behold.Worker.start_link(arg1, arg2, arg3)
       # worker(Behold.Worker, [arg1, arg2, arg3]),

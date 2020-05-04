@@ -13,12 +13,6 @@ defmodule BeholdWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", BeholdWeb do
-    pipe_through :browser # Use the default browser stack
-
-    get "/", PageController, :index
-  end
-
   scope "/api/v1", BeholdWeb do
     pipe_through :api
     post "/check", ChecksController, :create
