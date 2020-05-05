@@ -39,7 +39,7 @@ defmodule Observer.Cron.Rollup do
       Logger.debug("#{__MODULE__}: Rollup finished, updating check #{id} to #{translated_alerted_state}")
       :ok = Check.update_check_state(check, translated_alerted_state)
     else
-      error ->
+      _error ->
         Logger.debug("#{__MODULE__}: Rollup finished, no updates")
     end
   end

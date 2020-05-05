@@ -7,7 +7,7 @@ defmodule Observer.Check.JSON do
   alias Observer.Common.{JSON}
   alias Behold.Models.Value
 
-  def do_check(%{value: value, target: target, id: id} = check) do
+  def do_check(%{value: value, target: target, id: id} = _check) do
     case JSON.get(target, value) do
       true ->
         {:ok, changeset} = Value.create_changeset(:nominal, id)

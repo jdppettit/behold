@@ -64,9 +64,6 @@ defmodule Behold.Models.Check do
     case Behold.Repo.insert(changeset) do
       {:ok, model} ->
         {:ok, model}
-      {:error, %{errors: [email: {"has already been taken", []}]}} ->
-        Logger.error("#{__MODULE__}: Failed to insert record because of duplicate email")
-        {:error, :duplicate_email}
       {_, _} ->
         Logger.error("#{__MODULE__}: Problem inserting record #{inspect(changeset)}")
         {:error, :database_error}
