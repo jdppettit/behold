@@ -4,10 +4,10 @@ defmodule Observer.Check.Ping do
   use GenServer
   use Observer.Common.CheckFramework, name: "Ping"
 
-  alias Observer.Common.{Ping}
+  alias Observer.Common.{Ping, Notification}
   alias Behold.Models.Value
 
-  def do_check(%{target: target, id: id} = _check) do
+  def do_check(%{target: target, id: id} = check) do
     case Ping.ping(target) do
       true ->
         {:ok, changeset} = Value.create_changeset(:nominal, id)

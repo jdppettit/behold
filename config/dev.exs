@@ -56,3 +56,6 @@ config :behold, Behold.Repo,
   database: "behold_dev",
   hostname: "localhost",
   pool_size: 10
+
+config :observer, Observer.Common.Mailer,
+  adapter: Bamboo.LocalAdapter

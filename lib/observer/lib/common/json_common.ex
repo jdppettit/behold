@@ -7,7 +7,7 @@ defmodule Observer.Common.JSON do
         parsed_body,
         value |> split_value()
       )
-    catch
+    rescue
       _ ->
         false
     end

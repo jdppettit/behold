@@ -5,6 +5,7 @@ defmodule Observer.Cron.Rollup do
 
   alias Behold.Models.Value
   alias Behold.Models.Check
+  alias Observer.Common.Notification
 
   @default_threshold 3
 
@@ -38,6 +39,7 @@ defmodule Observer.Cron.Rollup do
       # if we should send a notification
       Logger.debug("#{__MODULE__}: Rollup finished, updating check #{id} to #{translated_alerted_state}")
       :ok = Check.update_check_state(check, translated_alerted_state)
+      Notification.maybe_send_notification(check, translated_alerted_state)
     else
       _error ->
         Logger.debug("#{__MODULE__}: Rollup finished, no updates")

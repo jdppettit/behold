@@ -19,7 +19,7 @@ defmodule BeholdWeb.AlertsController do
             target,
             interval,
             check_id,
-            DateTime.utc_now()
+            nil
          ),
          {:ok, model} <- Alert.insert(changeset)
     do

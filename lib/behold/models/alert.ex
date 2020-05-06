@@ -18,7 +18,9 @@ defmodule Behold.Models.Alert do
   def changeset(alert, attrs) do
     alert
     |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> validate_required([
+      :target, :type, :interval
+    ])
   end
 
   def create_changeset(%Behold.Models.Alert{} = model,
@@ -63,6 +65,20 @@ defmodule Behold.Models.Alert do
         {:ok, model}
       {_, _} ->
         Logger.error("#{__MODULE__}: Problem inserting record #{inspect(changeset)}")
+        {:error, :database_error}
+    end
+  end
+
+  def get_all_valid_alerts(check_id) do
+    query = from alerts in __MODULE__,
+      where: alerts.check_id == ^check_id
+
+    case Behold.Repo.all(query) do
+      [_ | _] = alerts ->
+        {:ok, alerts}
+      [] = alerts ->
+        {:ok, alerts}
+      error ->
         {:error, :database_error}
     end
   end
