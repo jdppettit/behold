@@ -7,7 +7,7 @@ defmodule Behold.Repo.Migrations.AddAlerts do
     create table("alerts") do
       add :type, AlertType.type()
       add :target, :string
-      add :last_sent, :date
+      add :last_sent, :utc_datetime
 
       timestamps()
     end

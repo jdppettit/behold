@@ -45,7 +45,8 @@ defmodule Behold.Mixfile do
       {:plug_cowboy, "~> 1.0"},
       {:ecto_enum, "~> 1.4"},
       {:httpoison, "~> 1.6"},
-      {:bamboo, "~> 1.4"}
+      {:bamboo, "~> 1.4"},
+      {:timex, "~> 3.5"},
     ]
   end
 

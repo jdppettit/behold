@@ -36,4 +36,16 @@ defmodule Observer.Common.Common do
   def do_compare(:not_equal_to, val1, val2) do
     val1 != val2
   end
+
+  def convert_float_to_integer(float) when is_integer(float), do: {:ok, float}
+  def convert_float_to_integer(float) do
+    {:ok, round(float)}
+  end
+
+  def convert_from_miliseconds_to_seconds(miliseconds) do
+    seconds = miliseconds / 1000
+    {:ok, int} = convert_float_to_integer(seconds)
+    IO.inspect(int, label: "number of seconds to shift")
+    int
+  end
 end

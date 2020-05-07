@@ -7,7 +7,7 @@ defmodule Behold.Models.Alert do
   schema "alerts" do
     field :target, :string
     field :type, AlertType
-    field :last_sent, :date
+    field :last_sent, :utc_datetime
     field :interval, :integer
 
     belongs_to :check, Behold.Models.Check
@@ -81,5 +81,13 @@ defmodule Behold.Models.Alert do
       error ->
         {:error, :database_error}
     end
+  end
+
+  def update_last_sent(alert, new_date) do
+    IO.inspect("doing update on alert")
+    changeset = __MODULE__.changeset(alert, %{
+      last_sent: new_date
+    })
+    Behold.Repo.update(changeset)
   end
 end
