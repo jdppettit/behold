@@ -45,7 +45,6 @@ defmodule Observer.Common.Common do
   def convert_from_miliseconds_to_seconds(miliseconds) do
     seconds = miliseconds / 1000
     {:ok, int} = convert_float_to_integer(seconds)
-    IO.inspect(int, label: "number of seconds to shift")
     int
   end
 end

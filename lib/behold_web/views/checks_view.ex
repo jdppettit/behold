@@ -22,6 +22,13 @@ defmodule BeholdWeb.ChecksView do
     }
   end
 
+  def render("check_updated.json", %{check: check}) do
+    %{
+      check: Helpers.sanitize(check),
+      message: "check updated"
+    }
+  end
+
   def render(_, %{message: message}) do
     %{
       message: message

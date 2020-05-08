@@ -18,9 +18,11 @@ defmodule BeholdWeb.Router do
     post "/check", ChecksController, :create
     get "/check/:id", ChecksController, :get
     get "/checks", ChecksController, :get_all
+    put "/check", ChecksController, :update
 
     get "/check/:id/values", ValuesController, :get
 
-    post "/check/:check_id/alert", AlertsController, :create
+    post "/alert", AlertsController, :create
+    put "/alert", AlertsController, :update
   end
 end

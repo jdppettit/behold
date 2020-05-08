@@ -9,4 +9,17 @@ defmodule BeholdWeb.AlertsView do
       alert: Helpers.sanitize(alert)
     }
   end
+
+  def render("alert_updated.json", %{alert: alert}) do
+    %{
+      message: "Alert updated",
+      alert: Helpers.sanitize(alert)
+    }
+  end
+
+  def render(_, %{message: message}) do
+    %{
+      message: message
+    }
+  end
 end

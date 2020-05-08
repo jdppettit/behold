@@ -59,12 +59,44 @@ defmodule Behold.Models.Alert do
     end
   end
 
+  def create_changeset(map) do
+    changeset = __MODULE__.changeset(%__MODULE__{}, map)
+    case changeset.valid? do
+      true ->
+        {:ok, changeset}
+      false ->
+        Logger.error("#{__MODULE__}: Changeset invalid #{inspect(changeset)}")
+        {:error, :changeset_invalid}
+    end
+  end
+
+  def create_changeset(model, map) do
+    changeset = __MODULE__.changeset(model, map)
+    case changeset.valid? do
+      true ->
+        {:ok, changeset}
+      false ->
+        Logger.error("#{__MODULE__}: Changeset invalid #{inspect(changeset)}")
+        {:error, :changeset_invalid}
+    end
+  end
+
   def insert(changeset) do
     case Behold.Repo.insert(changeset) do
       {:ok, model} ->
         {:ok, model}
       {_, _} ->
         Logger.error("#{__MODULE__}: Problem inserting record #{inspect(changeset)}")
+        {:error, :database_error}
+    end
+  end
+
+  def update(changeset) do
+    case Behold.Repo.update(changeset) do
+      {:ok, model} ->
+        {:ok, model}
+      {_, _} ->
+        Logger.error("#{__MODULE__}: Problem updating record #{inspect(changeset)}")
         {:error, :database_error}
     end
   end
@@ -84,10 +116,18 @@ defmodule Behold.Models.Alert do
   end
 
   def update_last_sent(alert, new_date) do
-    IO.inspect("doing update on alert")
     changeset = __MODULE__.changeset(alert, %{
       last_sent: new_date
     })
     Behold.Repo.update(changeset)
+  end
+
+  def get_by_id(id) do
+    case Behold.Repo.get(__MODULE__, id) do
+      nil ->
+        {:error, :not_found}
+      model ->
+        {:ok, model}
+    end
   end
 end
