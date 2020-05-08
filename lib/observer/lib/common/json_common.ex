@@ -15,8 +15,12 @@ defmodule Observer.Common.JSON do
 
   def validate_response(parsed_body, value_to_check) do
     try do
-      get_in(parsed_body, value_to_check)
-      true
+      case get_in(parsed_body, value_to_check) do
+        val when is_nil(val) ->
+          false
+        val when not is_nil(val) ->
+          true
+      end          
     catch
       _ ->
         false

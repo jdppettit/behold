@@ -28,7 +28,7 @@ defmodule Behold.Models.Check do
     ])
   end
 
-  def create_changeset(%Behold.Models.Check{} = model, type, value, interval, target) do
+  def create_changeset(%__MODULE__{} = model, type, value, interval, target) do
     changeset = __MODULE__.changeset(model, %{
       type: type,
       value: value,

@@ -23,7 +23,7 @@ defmodule Behold.Models.Alert do
     ])
   end
 
-  def create_changeset(%Behold.Models.Alert{} = model,
+  def create_changeset(%__MODULE__{} = model,
     type, target, interval, check_id, last_sent
   ) do
     changeset = __MODULE__.changeset(model, %{
