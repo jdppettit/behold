@@ -1,7 +1,7 @@
 defmodule Observer.Common.Notification do
   require Logger
 
-  alias Behold.Models.Alert
+  alias Behold.Models.{Alert,Check}
   alias Observer.Common.Common
 
   @bad_states [:critical, :warning]
@@ -67,16 +67,34 @@ defmodule Observer.Common.Notification do
   end
 
   def fire_notification(check, last_state_change, alert) do
-    IO.inspect(check.state, label: "check_state")
-    IO.inspect(last_state_change, label: "last_state_change")
-    if check.state != last_state_change do
-      if check.state in @bad_states and last_state_change in @good_states do
-        fire_good_notification(check, alert)
-      else
+    # If the checks last alerted for is nil
+      # If last_state_change is bad, do bad notification
+      # If last_state_change is good, probably do nothing
+    # Else
+      # If checks last alerted is not equal to last state and last state is nominal,
+      # alert and then set last alerted to nominal
+
+      # Else
+      # Send bad notification
+    if is_nil(check.last_alerted_for) do
+      if last_state_change in @bad_states do
+        IO.inspect("in nil and last state in bad")
         fire_bad_notification(check, alert)
       end
     else
-      Logger.debug("#{__MODULE__}: Check state and state change matched, no need to notify for #{check.id}")
+      IO.inspect("in main else")
+      if check.last_alerted_for != last_state_change and last_state_change in @good_states do
+        IO.inspect("in alerted for not state change and state change in good")
+        fire_good_notification(check, alert)
+      else
+        IO.inspect("in second else")
+        if check.last_alerted_for != last_state_change do
+          IO.inspect("in check alerted for not last state change")
+          fire_bad_notification(check, alert)
+        else
+          Logger.debug("#{__MODULE__}: Check state and state change matched, no need to notify for #{check.id}")
+        end
+      end
     end
   end
 
@@ -86,9 +104,11 @@ defmodule Observer.Common.Notification do
       :email ->
         Observer.Notification.Email.send(check, alert, :up)
         Alert.update_last_sent(alert, Timex.now())
+        Check.update_last_alerted(check, :nominal)
       :sms ->
         Observer.Notification.SMS.send(check, alert, :up)
         Alert.update_last_sent(alert, Timex.now())
+        Check.update_last_alerted(check, :nominal)
       type ->
         Logger.error("#{__MODULE__}: Wanted to fire good alert for check #{check.id} but alert type #{inspect(type)} unknown")
     end
@@ -100,9 +120,11 @@ defmodule Observer.Common.Notification do
       :email ->
         Observer.Notification.Email.send(check, alert, :down)
         Alert.update_last_sent(alert, Timex.now())
+        Check.update_last_alerted(check, :critical)
       :sms ->
         Observer.Notification.SMS.send(check, alert, :down)
         Alert.update_last_sent(alert, Timex.now())
+        Check.update_last_alerted(check, :critical)
       type ->
         Logger.error("#{__MODULE__}: Wanted to fire bad alert for check #{check.id} but alert type #{inspect(type)} unknown")
     end

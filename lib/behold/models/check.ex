@@ -13,6 +13,7 @@ defmodule Behold.Models.Check do
     field :name, :string
     field :operation, CheckOperationTypes
     field :comparison, :string
+    field :last_alerted_for, AlertType
 
     timestamps()
   end
@@ -121,6 +122,25 @@ defmodule Behold.Models.Check do
     changeset = __MODULE__.changeset(check_struct, %{
       state: new_state
     })
+    case changeset.valid? do
+      true ->
+        Behold.Repo.update(changeset)
+        :ok
+      false ->
+        :error
+    end
+  end
+
+  def update_last_alerted(check, last_alerted) do
+    IO.inspect(check, label: "first check")
+    IO.inspect(last_alerted, label: "last alerted")
+    check_struct = struct(%__MODULE__{}, check)
+    IO.inspect(check_struct, label: "struct")
+    changeset = __MODULE__.changeset(check_struct, %{
+      last_alerted_for: last_alerted
+    })
+    IO.inspect(changeset.valid?)
+    IO.inspect(changeset, label: "changeset")
     case changeset.valid? do
       true ->
         Behold.Repo.update(changeset)
