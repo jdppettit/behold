@@ -3,7 +3,7 @@ defmodule Behold.Repo.Migrations.AddLastAlertedFor do
 
   def change do
     alter table("checks") do
-      add :last_alerted_for, AlertType.type()
+      add :last_alerted_for, CheckStateTypes.type()
     end
   end
 end

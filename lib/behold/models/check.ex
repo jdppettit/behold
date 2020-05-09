@@ -13,7 +13,7 @@ defmodule Behold.Models.Check do
     field :name, :string
     field :operation, CheckOperationTypes
     field :comparison, :string
-    field :last_alerted_for, AlertType
+    field :last_alerted_for, CheckStateTypes
 
     timestamps()
   end

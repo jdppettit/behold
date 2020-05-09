@@ -4,30 +4,50 @@ defmodule Observer.Common.Notification do
   alias Behold.Models.{Alert,Check}
   alias Observer.Common.Common
 
-  @bad_states [:critical, :warning]
-  @good_states [:nominal]
+  @bad_types [:critical, :warning]
+  @good_types [:nominal]
 
-  def maybe_send_notification(check, last_state_change) do
-    with {:ok, alerts} <- validate_timing(check) do
+  # This case will only fire the initial bad notification
+  # and a recovery notification
+  def maybe_send_notification(
+    %{
+      interval: interval,
+      id: id
+    } = check,
+    last_state_change
+  ) when is_nil(interval) do
+    Logger.debug("#{__MODULE__}: In no interval track")
+    with {:ok, alerts} <- Alert.get_all_valid_alerts(id) do
+      Logger.debug("#{__MODULE__}: Valid alerts: #{inspect(alerts)}")
       alerts
       |> Enum.map(fn alert ->
-        Logger.debug("#{__MODULE__}: Sending alert type #{alert.type} for #{check.id}")
-        fire_notification(check, last_state_change, alert)
+        determine_notification_to_send(check, alert, last_state_change)
       end)
     else
-      {:error, :nominal} ->
-        Logger.debug("#{__MODULE__}: Did not fire alert for check #{check.id} because state is nominal")
-      error ->
-        Logger.debug("#{__MODULE__}: Did not fire alert for check #{check.id} because #{inspect(error)}l")
+      e ->
+        Logger.error("#{__MODULE__}: Failed to send notification for check #{check.id} because #{inspect(e)}")
     end
   end
 
-  def validate_last_state(last_state) do
-    case last_state do
-      :critical ->
-        {:ok, :critical}
-      :nominal ->
-        {:error, :nominal}
+  # This case will fire if there is an interval, this means we should send
+  # notifications every time the interval has passed and when recovery happens
+  def maybe_send_notification(
+    %{
+      interval: interval,
+      id: id
+    } = check,
+    last_state_change
+  ) when not is_nil(interval) do
+    Logger.debug("#{__MODULE__}: In interval track")
+    with {:ok, alerts} <- validate_timing(check) do
+      Logger.debug("#{__MODULE__}: Valid alerts: #{inspect(alerts)}")
+      alerts
+      |> Enum.map(fn alert ->
+        determine_notification_to_send(check, alert, last_state_change)
+      end)
+    else
+      e ->
+        Logger.error("#{__MODULE__}: Failed to send notification for check #{check.id} because #{inspect(e)}")
     end
   end
 
@@ -66,41 +86,8 @@ defmodule Observer.Common.Notification do
     end
   end
 
-  def fire_notification(check, last_state_change, alert) do
-    # If the checks last alerted for is nil
-      # If last_state_change is bad, do bad notification
-      # If last_state_change is good, probably do nothing
-    # Else
-      # If checks last alerted is not equal to last state and last state is nominal,
-      # alert and then set last alerted to nominal
-
-      # Else
-      # Send bad notification
-    if is_nil(check.last_alerted_for) do
-      if last_state_change in @bad_states do
-        IO.inspect("in nil and last state in bad")
-        fire_bad_notification(check, alert)
-      end
-    else
-      IO.inspect("in main else")
-      if check.last_alerted_for != last_state_change and last_state_change in @good_states do
-        IO.inspect("in alerted for not state change and state change in good")
-        fire_good_notification(check, alert)
-      else
-        IO.inspect("in second else")
-        if check.last_alerted_for != last_state_change do
-          IO.inspect("in check alerted for not last state change")
-          fire_bad_notification(check, alert)
-        else
-          Logger.debug("#{__MODULE__}: Check state and state change matched, no need to notify for #{check.id}")
-        end
-      end
-    end
-  end
-
   def fire_good_notification(check, alert) do
-    IO.inspect("firing good notification")
-    case check.type do
+    case alert.type do
       :email ->
         Observer.Notification.Email.send(check, alert, :up)
         Alert.update_last_sent(alert, Timex.now())
@@ -115,7 +102,6 @@ defmodule Observer.Common.Notification do
   end
 
   def fire_bad_notification(check, alert) do
-    IO.inspect("firing bad notification")
     case alert.type do
       :email ->
         Observer.Notification.Email.send(check, alert, :down)
@@ -127,6 +113,34 @@ defmodule Observer.Common.Notification do
         Check.update_last_alerted(check, :critical)
       type ->
         Logger.error("#{__MODULE__}: Wanted to fire bad alert for check #{check.id} but alert type #{inspect(type)} unknown")
+    end
+  end
+
+  def determine_notification_to_send(
+    %{last_alerted_for: last_alerted_for} = check,
+    alert,
+    last_state_change
+  ) do
+    if is_nil(last_alerted_for) do
+      Logger.debug("#{__MODULE__}: Notification last alerted state was nil")
+      if last_state_change in @bad_types do
+        Logger.debug("#{__MODULE__}: Notification last alerted was nil and new state was in bad states, sending bad notification")
+        fire_bad_notification(check, alert)
+      else
+        Logger.debug("#{__MODULE__}: Notification last alerted was nil and new state was in good states, doing nothing")
+      end
+    else
+      if last_alerted_for != last_state_change do
+        if last_state_change in @bad_types do
+          Logger.debug("#{__MODULE__}: Notification last alerted was #{last_alerted_for} and last_state was in bad types, sending bad notification")
+          fire_bad_notification(check, alert)
+        else
+          if last_alerted_for in @bad_types and last_state_change in @good_types do
+            Logger.debug("#{__MODULE__}: Notification last alerted was #{last_alerted_for} and last_state was in good types, sending recovery")
+            fire_good_notification(check, alert)
+          end
+        end
+      end
     end
   end
 end
