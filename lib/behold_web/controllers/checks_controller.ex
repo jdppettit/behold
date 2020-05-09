@@ -107,6 +107,8 @@ defmodule BeholdWeb.ChecksController do
         {:ok, "ping"}
       "http_json" ->
         {:ok, "http_json"}
+      "http_json_comparison" ->
+        {:ok, "http_json_comparison"}
       _ ->
         {:error, :bad_type}
     end
@@ -117,7 +119,7 @@ defmodule BeholdWeb.ChecksController do
       %{
         type: get_key(params, "type"),
         value: get_key(params, "value"),
-        integer: get_key(params, "interval"),
+        interval: get_key(params, "interval"),
         target: get_key(params, "target"),
         state: get_key(params, "state"),
         name: get_key(params, "name"),

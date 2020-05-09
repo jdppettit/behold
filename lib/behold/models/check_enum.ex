@@ -4,7 +4,8 @@ defmodule CheckTypes do
     enums: [
       :http,
       :ping,
-      :http_json
+      :http_json,
+      :http_json_comparison
     ]
 end
 

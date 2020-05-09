@@ -86,7 +86,7 @@ defmodule Observer.Common.Notification do
     end
   end
 
-  def fire_good_notification(check, alert) do
+  def fire_recovery_notification(check, alert) do
     case alert.type do
       :email ->
         Observer.Notification.Email.send(check, alert, :up)
@@ -101,7 +101,7 @@ defmodule Observer.Common.Notification do
     end
   end
 
-  def fire_bad_notification(check, alert) do
+  def fire_alert_notification(check, alert) do
     case alert.type do
       :email ->
         Observer.Notification.Email.send(check, alert, :down)
@@ -125,7 +125,7 @@ defmodule Observer.Common.Notification do
       Logger.debug("#{__MODULE__}: Notification last alerted state was nil")
       if last_state_change in @bad_types do
         Logger.debug("#{__MODULE__}: Notification last alerted was nil and new state was in bad states, sending bad notification")
-        fire_bad_notification(check, alert)
+        fire_alert_notification(check, alert)
       else
         Logger.debug("#{__MODULE__}: Notification last alerted was nil and new state was in good states, doing nothing")
       end
@@ -133,11 +133,11 @@ defmodule Observer.Common.Notification do
       if last_alerted_for != last_state_change do
         if last_state_change in @bad_types do
           Logger.debug("#{__MODULE__}: Notification last alerted was #{last_alerted_for} and last_state was in bad types, sending bad notification")
-          fire_bad_notification(check, alert)
+          fire_alert_notification(check, alert)
         else
           if last_alerted_for in @bad_types and last_state_change in @good_types do
             Logger.debug("#{__MODULE__}: Notification last alerted was #{last_alerted_for} and last_state was in good types, sending recovery")
-            fire_good_notification(check, alert)
+            fire_recovery_notification(check, alert)
           end
         end
       end

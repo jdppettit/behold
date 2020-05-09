@@ -37,6 +37,78 @@ defmodule Observer.Common.Common do
     val1 != val2
   end
 
+  def do_compare_date(:greater_than, val1, val2) do
+    c = Timex.compare(val1, val2)
+    case c do
+      -1 ->
+        false
+      0 ->
+        false
+      1 ->
+        true
+    end
+  end
+
+  def do_compare_date(:less_than, val1, val2) do
+    c = Timex.compare(val1, val2)
+    case c do
+      -1 ->
+        true
+      0 ->
+        false
+      1 ->
+        false
+    end
+  end
+
+  def do_compare_date(:greater_than_or_equal_to, val1, val2) do
+    c = Timex.compare(val1, val2)
+    case c do
+      -1 ->
+        false
+      0 ->
+        true
+      1 ->
+        true
+    end
+  end
+
+  def do_compare_date(:less_than_or_equal_to, val1, val2) do
+    c = Timex.compare(val1, val2)
+    case c do
+      -1 ->
+        true
+      0 ->
+        true
+      1 ->
+        false
+    end
+  end
+
+  def do_compare_date(:equal_to, val1, val2) do
+    c = Timex.compare(val1, val2)
+    case c do
+      -1 ->
+        false
+      0 ->
+        true
+      1 ->
+        false
+    end
+  end
+
+  def do_compare_date(:not_equal_to, val1, val2) do
+    c = Timex.compare(val1, val2)
+    case c do
+      -1 ->
+        true
+      0 ->
+        false
+      1 ->
+        true
+    end
+  end
+
   def convert_float_to_integer(float) when is_integer(float), do: {:ok, float}
   def convert_float_to_integer(float) do
     {:ok, round(float)}
