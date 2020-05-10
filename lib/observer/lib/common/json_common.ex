@@ -20,8 +20,8 @@ defmodule Observer.Common.JSON do
           false
         val when not is_nil(val) ->
           true
-      end          
-    catch
+      end
+    rescue
       _ ->
         false
     end

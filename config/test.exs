@@ -12,8 +12,11 @@ config :logger, level: :warn
 # Configure your database
 config :behold, Behold.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  username: "behold",
+  password: "beholdtest",
   database: "behold_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :observer, Observer.Common.Mailer,
+  adapter: Bamboo.LocalAdapter

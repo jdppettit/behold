@@ -13,12 +13,16 @@ defmodule Observer.Common.Ping do
     |> String.split("\n")
     |> Enum.at(4)
 
-    Regex.scan(~r/[0-9]/, result, capture: :all)
-    |> List.flatten
-    |> (fn list ->
-      first = Enum.at(list, 0)
-      second = Enum.at(list, 1)
-      first == second
-    end).()
+    if is_nil(result) do
+      false
+    else
+      Regex.scan(~r/[0-9]/, result, capture: :all)
+      |> List.flatten
+      |> (fn list ->
+        first = Enum.at(list, 0)
+        second = Enum.at(list, 1)
+        first == second
+      end).()
+    end
   end
 end
