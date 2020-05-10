@@ -52,9 +52,6 @@ defmodule Behold.Models.Value do
     case Behold.Repo.insert(changeset) do
       {:ok, model} ->
         {:ok, model}
-      {:error, %{errors: [email: {"has already been taken", []}]}} ->
-        Logger.error("#{__MODULE__}: Failed to insert record because of duplicate email")
-        {:error, :duplicate_email}
       {_, _} ->
         Logger.error("#{__MODULE__}: Problem inserting record #{inspect(changeset)}")
         {:error, :database_error}
@@ -75,5 +72,16 @@ defmodule Behold.Models.Value do
       error ->
         {:error, :database_error}
     end
+  end
+
+  def delete_by_check_id(check_id) do
+    query = from values in __MODULE__,
+      where: values.check_id == ^check_id
+
+    Behold.Repo.all(query)
+    |> Enum.map(fn f ->
+      Behold.Repo.delete(f)
+    end)
+    {:ok, nil}
   end
 end

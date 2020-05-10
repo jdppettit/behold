@@ -67,6 +67,18 @@ defmodule BeholdWeb.ChecksController do
     end
   end
 
+  def delete(conn, %{"id" => id} = _params) do
+    with {:ok, _} <- Check.delete_by_id(id) do
+      conn
+      |> render("check_deleted.json")
+    else
+      _ ->
+        conn
+        |> put_status(500)
+        |> render("server_error.json", message: "Unexpected server error")
+    end
+  end
+
   def get(conn, %{"id" => id} = _params) do
     with {:ok, model} <- Check.get_by_id(id, :preload) do
       conn

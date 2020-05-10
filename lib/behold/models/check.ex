@@ -178,4 +178,22 @@ defmodule Behold.Models.Check do
         {:ok, model |> Behold.Repo.preload(:alerts)}
     end
   end
+
+  def delete_by_id(id) do
+    Behold.Repo.transaction(fn ->
+      {:ok, model} = get_by_id(id)
+      {:ok, nil} = Behold.Models.Value.delete_by_check_id(id)
+      case Behold.Models.Alert.get_by_id(id) do
+        {:ok, alerts} ->
+          alerts
+          |> Enum.map(fn alert ->
+            {:ok, _} = Behold.Models.Alert.delete_by_id(alert.id)
+          end)
+        {:error, :not_found} ->
+          nil
+      end
+      Behold.Repo.delete(model)
+    end)
+    {:ok, nil}
+  end
 end
