@@ -15,6 +15,8 @@ defmodule Behold.Models.Check do
     field :comparison, :string
     field :last_alerted_for, CheckStateTypes
 
+    has_many :alerts, Behold.Models.Alert
+
     timestamps()
   end
 
@@ -117,6 +119,20 @@ defmodule Behold.Models.Check do
     end
   end
 
+  def get_all_valid_checks(:preload) do
+    query = from checks in __MODULE__,
+      where: checks.id >= ^1
+
+    case Behold.Repo.all(query) do
+      [_ | _] = checks ->
+        {:ok, checks |> Behold.Repo.preload(:alerts)}
+      [] = checks ->
+        {:ok, checks}
+      error ->
+        {:error, :database_error}
+    end
+  end
+
   def update_check_state(check, new_state) do
     check_struct = struct(%__MODULE__{}, check)
     changeset = __MODULE__.changeset(check_struct, %{
@@ -132,15 +148,10 @@ defmodule Behold.Models.Check do
   end
 
   def update_last_alerted(check, last_alerted) do
-    IO.inspect(check, label: "first check")
-    IO.inspect(last_alerted, label: "last alerted")
     check_struct = struct(%__MODULE__{}, check)
-    IO.inspect(check_struct, label: "struct")
     changeset = __MODULE__.changeset(check_struct, %{
       last_alerted_for: last_alerted
     })
-    IO.inspect(changeset.valid?)
-    IO.inspect(changeset, label: "changeset")
     case changeset.valid? do
       true ->
         Behold.Repo.update(changeset)
@@ -156,6 +167,15 @@ defmodule Behold.Models.Check do
         {:error, :not_found}
       model ->
         {:ok, model}
+    end
+  end
+
+  def get_by_id(id, :preload) do
+    case Behold.Repo.get(__MODULE__, id) do
+      nil ->
+        {:error, :not_found}
+      model ->
+        {:ok, model |> Behold.Repo.preload(:alerts)}
     end
   end
 end

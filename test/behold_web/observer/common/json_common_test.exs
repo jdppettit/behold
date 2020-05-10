@@ -12,4 +12,12 @@ defmodule Observer.Common.JSONTest do
     response = JSON.validate_response(%{"thing" => %{"fee" => %{"foh" => "fum"}}}, "thing.fee.foh.fum" |> JSON.split_value)
     assert response == false
   end
+
+  test "split_value/1 returns a string split by periods", _ do
+    response = JSON.split_value("thing")
+    assert response == ["thing"]
+
+    response = JSON.split_value("thing.foo.bar")
+    assert response == ["thing", "foo", "bar"]
+  end
 end

@@ -24,5 +24,7 @@ defmodule BeholdWeb.Router do
 
     post "/alert", AlertsController, :create
     put "/alert", AlertsController, :update
+    delete "/alert", AlertsController, :delete
+    get "/alerts", AlertsController, :get_all
   end
 end

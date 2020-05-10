@@ -17,6 +17,13 @@ defmodule BeholdWeb.AlertsView do
     }
   end
 
+  def render("alerts.json", %{alerts: alerts}) do
+    %{
+      message: "Success",
+      alerts: Enum.map(alerts, fn alert -> Helpers.sanitize(alert) end)
+    }
+  end
+
   def render(_, %{message: message}) do
     %{
       message: message

@@ -101,6 +101,10 @@ defmodule Behold.Models.Alert do
     end
   end
 
+  def get_all_valid_alerts() do
+    Behold.Repo.all(__MODULE__) |> IO.inspect(label: "from model")
+  end
+
   def get_all_valid_alerts(check_id) do
     query = from alerts in __MODULE__,
       where: alerts.check_id == ^check_id
@@ -128,6 +132,18 @@ defmodule Behold.Models.Alert do
         {:error, :not_found}
       model ->
         {:ok, model}
+    end
+  end
+
+  def delete_by_id(id) do
+    case get_by_id(id) do
+      {:ok, model} ->
+        Behold.Repo.delete(id)
+        {:ok, nil}
+      {:error, :not_found} ->
+        {:error, :not_found}
+      error ->
+        {:error, :database_error}
     end
   end
 end

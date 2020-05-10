@@ -68,7 +68,7 @@ defmodule BeholdWeb.ChecksController do
   end
 
   def get(conn, %{"id" => id} = _params) do
-    with {:ok, model} <- Check.get_by_id(id) do
+    with {:ok, model} <- Check.get_by_id(id, :preload) do
       conn
       |> render("check.json", check: model)
     else
@@ -84,7 +84,7 @@ defmodule BeholdWeb.ChecksController do
   end
 
   def get_all(conn, _params) do
-    with {:ok, models} <- Check.get_all_valid_checks() do
+    with {:ok, models} <- Check.get_all_valid_checks(:preload) do
       conn
       |> render("checks.json", checks: models)
     else

@@ -79,6 +79,31 @@ defmodule BeholdWeb.AlertsController do
     end
   end
 
+  def delete(conn, %{"id" => id} = _params) do
+    with {:ok, _} <- Alert.delete_by_id(id) do
+      conn
+      |> render("alert_deleted.json")
+    else
+      {:ok, :not_found} ->
+        conn
+        |> put_status(404)
+        |> render("not_found.json", message: "Alert not found")
+      {:error, :database_error} ->
+        conn
+        |> put_status(500)
+        |> render("server_error.json", message: "Unexpected database error")
+      _ ->
+        conn
+        |> put_status(500)
+        |> render("server_error.json", message: "Unexpected server error")
+    end
+  end
+
+  def get_all(conn, _params) do
+    conn
+    |> render("alerts.json", alerts: Alert.get_all_valid_alerts)
+  end
+
   defp validate_type(type) do
     {:ok, type in @valid_types}
   end
@@ -105,7 +130,6 @@ defmodule BeholdWeb.AlertsController do
 
   def extract_check_id(params) do
     id = get_key(params, "check_id")
-    IO.inspect(id, label: "check_id")
     if is_nil(id) do
       {:error, :missing_check_id}
     else
