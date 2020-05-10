@@ -5,15 +5,22 @@ defmodule BeholdWeb.Views.Helpers do
       :__meta__
     ])
 
-    alerts = model
-    |> (fn model ->
-      model.alerts
-    end).()
-    |> Enum.map(fn alert ->
-      sanitize(alert)
-    end)
+    if is_list(model.alerts) do
+      alerts = model
+      |> (fn model ->
+        model.alerts
+      end).()
+      |> Enum.map(fn alert ->
+        sanitize(alert)
+      end)
 
-    Map.replace!(model, :alerts, alerts)
+      Map.replace!(model, :alerts, alerts)
+    else
+      model
+      |> Map.drop([
+        :alerts
+      ])
+    end
   end
 
   def sanitize(%Behold.Models.Alert{} = model) do

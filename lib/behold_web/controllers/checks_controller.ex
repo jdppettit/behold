@@ -112,16 +112,10 @@ defmodule BeholdWeb.ChecksController do
   end
 
   def validate_type(type) do
-    case type do
-      "http" ->
-        {:ok, "http"}
-      "ping" ->
-        {:ok, "ping"}
-      "http_json" ->
-        {:ok, "http_json"}
-      "http_json_comparison" ->
-        {:ok, "http_json_comparison"}
-      _ ->
+    case type in CheckTypes.__valid_values__() do
+      true ->
+        {:ok, type}
+      false ->
         {:error, :bad_type}
     end
   end

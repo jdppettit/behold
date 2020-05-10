@@ -5,8 +5,6 @@ defmodule BeholdWeb.AlertsController do
 
   alias Behold.Models.Alert
 
-  @valid_types ["sms", "phone", "email", "webhook"]
-
   def create(conn, params) do
     with {:ok, _type} <- validate_type(get_key(params, "type")),
          {:ok, _check_id} <- extract_check_id(params),
@@ -104,8 +102,13 @@ defmodule BeholdWeb.AlertsController do
     |> render("alerts.json", alerts: Alert.get_all_valid_alerts)
   end
 
-  defp validate_type(type) do
-    {:ok, type in @valid_types}
+  def validate_type(type) do
+    case type in AlertType.__valid_values__() do
+      true ->
+        {:ok, type}
+      false ->
+        {:error, :bad_type}
+    end
   end
 
   def extract_params(params) do
