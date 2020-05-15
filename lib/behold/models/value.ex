@@ -84,4 +84,19 @@ defmodule Behold.Models.Value do
     end)
     {:ok, nil}
   end
+
+  def get_by_check_id(check_id, last \\ 10) do 
+    query = from values in __MODULE__,
+      where: values.check_id == ^check_id,
+      limit: ^last
+
+    case Behold.Repo.all(query) do
+      [_ | _] = values ->
+        {:ok, values}
+      [] = values ->
+        {:ok, values}
+      error ->
+        {:error, :database_error}
+    end
+  end
 end

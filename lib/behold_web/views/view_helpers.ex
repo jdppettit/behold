@@ -30,4 +30,12 @@ defmodule BeholdWeb.Views.Helpers do
       :check
     ])
   end
+
+  def sanitize(%Behold.Models.Value{} = model) do
+    model
+    |> Map.drop([
+      :__meta__,
+      :check
+    ])
+  end
 end
