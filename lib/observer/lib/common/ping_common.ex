@@ -1,6 +1,6 @@
 defmodule Observer.Common.Ping do
   def ping(host) do
-    case System.cmd("ping", [host, "-c 1"]) do
+    case System.cmd("ping", [host, "-c", "1"]) do
       {result, 0} ->
         check_result(result)
       {_, _} ->
