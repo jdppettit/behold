@@ -17,7 +17,7 @@ defmodule Observer.Common.JSON do
     try do
       case get_in(parsed_body, value_to_check) do
         val when is_nil(val) ->
-          {false, val}
+          {false, "key not found"}
         val when not is_nil(val) ->
           {true, val}
       end

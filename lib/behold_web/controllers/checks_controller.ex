@@ -82,9 +82,11 @@ defmodule BeholdWeb.ChecksController do
   end
 
   def get(conn, %{"id" => id} = _params) do
-    with {:ok, model} <- Check.get_by_id(id, :preload) do
+    with {:ok, model} <- Check.get_by_id(id, :preload),
+         {:ok, enriched_model} <- enrich_process_data(model)
+    do
       conn
-      |> render("check.json", check: model)
+      |> render("check.json", check: enriched_model)
     else
       {:error, :not_found} ->
         conn
@@ -174,4 +176,22 @@ defmodule BeholdWeb.ChecksController do
     end)
     Map.drop(map, nil_keys)
   end
+
+  def enrich_process_data(model) do
+    {rollup_running, _} = check_rollup_status(model)
+    {check_running, _} = check_check_status(model)
+    model = model
+    |> Map.put(:processes, %{rollup_running: rollup_running, check_running: check_running})
+    {:ok, model}
+  end
+
+  def check_rollup_status(%{id: id} = _model) do
+    pid = Process.whereis(String.to_atom("#{id}-rollup"))
+    {not is_nil(pid), pid}
+  end
+
+  def check_check_status(%{id: id, type: type} = _model) do
+    pid = Process.whereis(String.to_atom("#{id}-#{type}"))
+    {not is_nil(pid), pid}
+  end 
 end

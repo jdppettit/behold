@@ -15,7 +15,7 @@ defmodule Observer.Common.JSONComparison do
     catch
       e ->
         Logger.error("#{__MODULE__}: Error in get JSON Comparison #{inspect(e)}")
-        false
+        {false, "json_error"}
     end
   end
 
@@ -23,7 +23,7 @@ defmodule Observer.Common.JSONComparison do
     try do
       case get_in(parsed_body, value_to_check) do
         val when is_nil(val) ->
-          {false, val}
+          {false, "key not found"}
         val when not is_nil(val) ->
           case is_variable?(comparison) do
             true ->
