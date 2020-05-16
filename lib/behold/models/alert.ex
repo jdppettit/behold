@@ -19,7 +19,7 @@ defmodule Behold.Models.Alert do
     alert
     |> cast(attrs, __schema__(:fields))
     |> validate_required([
-      :target, :type, :interval
+      :target, :type
     ])
   end
 
