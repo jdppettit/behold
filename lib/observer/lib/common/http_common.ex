@@ -2,8 +2,12 @@ defmodule Observer.Common.HTTP do
   alias Observer.Common.Common
 
   def get(path, value) do
-    {:ok, response} = HTTPoison.get(path)
-    check_return_value(response.status_code, value)
+    {code, response} = HTTPoison.get(path)
+    if code !== :ok do
+      false
+    else
+      check_return_value(response.status_code, value)
+    end
   end
 
   def check_return_value(return_value, check_value) do
