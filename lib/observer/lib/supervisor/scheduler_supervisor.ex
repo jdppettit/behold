@@ -68,12 +68,10 @@ defmodule Observer.Supervisor.SchedulerSupervisor do
     {:ok, checks} = Behold.Models.Check.get_all_valid_checks()
     checks
     |> Enum.map(fn %{type: type} = check ->
-      if is_nil(Process.whereis(String.to_atom("#{check.id}-rollup"))) do
-        DynamicSupervisor.start_child(__MODULE__, %{
-          id: Observer.Cron.Rollup,
-          start: {Observer.Cron.Rollup, :start_link, [Map.from_struct(check)]}
-        })
-      end
+      DynamicSupervisor.start_child(__MODULE__, %{
+        id: Observer.Cron.Rollup,
+        start: {Observer.Cron.Rollup, :start_link, [Map.from_struct(check)]}
+      })
     end)
   end
 end
