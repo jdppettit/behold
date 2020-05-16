@@ -35,6 +35,8 @@ defmodule BeholdWeb.Endpoint do
     key: "_behold_key",
     signing_salt: "WEoa8/rE"
 
+  plug CORSPlug, origin: "*"
+
   plug BeholdWeb.Router
 
   @doc """

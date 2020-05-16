@@ -47,6 +47,7 @@ defmodule Behold.Mixfile do
       {:httpoison, "~> 1.6"},
       {:bamboo, "~> 1.4"},
       {:timex, "~> 3.5"},
+      {:cors_plug, "~> 1.5"}
     ]
   end
 
