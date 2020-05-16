@@ -23,19 +23,19 @@ defmodule Observer.Common.JSONComparison do
     try do
       case get_in(parsed_body, value_to_check) do
         val when is_nil(val) ->
-          false
+          {false, val}
         val when not is_nil(val) ->
           case is_variable?(comparison) do
             true ->
-              handle_comparison_variables(operation, val, comparison)
+              {handle_comparison_variables(operation, val, comparison), val}
             false ->
-              Common.do_compare(operation, val, comparison)
+              {Common.do_compare(operation, val, comparison), val}
           end
       end
     catch
       e ->
         Logger.error("#{__MODULE__}: Error in validate response #{inspect(e)}")
-        false
+        {false, "error"}
     end
   end
 

@@ -9,7 +9,7 @@ defmodule Observer.Common.JSON do
       )
     rescue
       _ ->
-        false
+        {false, "error"}
     end
   end
 
@@ -17,13 +17,13 @@ defmodule Observer.Common.JSON do
     try do
       case get_in(parsed_body, value_to_check) do
         val when is_nil(val) ->
-          false
+          {false, val}
         val when not is_nil(val) ->
-          true
+          {true, val}
       end
     rescue
       _ ->
-        false
+        {false, "invalid json"}
     end
   end
 

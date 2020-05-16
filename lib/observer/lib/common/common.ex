@@ -119,4 +119,14 @@ defmodule Observer.Common.Common do
     {:ok, int} = convert_float_to_integer(seconds)
     int
   end
+
+  def convert_to_string(val) when is_integer(val) do
+    Integer.to_string(val)
+  end
+
+  def convert_to_string(val) when is_float(val) do
+    Float.to_string(val)
+  end
+
+  def convert_to_string(val), do: val
 end

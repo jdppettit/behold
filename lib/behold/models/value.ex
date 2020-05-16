@@ -4,8 +4,11 @@ defmodule Behold.Models.Value do
   import Ecto.Query
   require Logger
 
+  alias Observer.Common.Common
+
   schema "values" do
     field :value, ValueType
+    field :returned_value, :string
 
     belongs_to :check, Behold.Models.Check
     timestamps()
@@ -13,7 +16,7 @@ defmodule Behold.Models.Value do
 
   def changeset(check, attrs) do
     check
-    |> cast(attrs,[:value, :check_id])
+    |> cast(attrs, __schema__(:fields))
     |> validate_required([
       :value,
       :check_id
@@ -34,10 +37,11 @@ defmodule Behold.Models.Value do
     end
   end
 
-  def create_changeset(value, check_id) do
+  def create_changeset(value, check_id, returned_value) do
     changeset = __MODULE__.changeset(%__MODULE__{}, %{
       value: value,
-      check_id: check_id
+      check_id: check_id,
+      returned_value: Common.convert_to_string(returned_value)
     })
     case changeset.valid? do
       true ->
@@ -69,7 +73,7 @@ defmodule Behold.Models.Value do
         {:ok, values}
       [] = values ->
         {:ok, values}
-      error ->
+      _error ->
         {:error, :database_error}
     end
   end
@@ -96,7 +100,7 @@ defmodule Behold.Models.Value do
         {:ok, values}
       [] = values ->
         {:ok, values}
-      error ->
+      _error ->
         {:error, :database_error}
     end
   end

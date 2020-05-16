@@ -4,7 +4,7 @@ defmodule Observer.Common.HTTP do
   def get(path, value) do
     {code, response} = HTTPoison.get(path)
     if code !== :ok do
-      false
+      {false, "#{code}"}
     else
       check_return_value(response.status_code, value)
     end
@@ -12,10 +12,10 @@ defmodule Observer.Common.HTTP do
 
   def check_return_value(return_value, check_value) do
     with {:ok, check_value} <- Common.convert_string_to_int(check_value) do
-      return_value == check_value
+      {return_value == check_value, return_value}
     else
       _ ->
-        false
+        {false, return_value}
     end
   end
 end

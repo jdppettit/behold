@@ -15,11 +15,11 @@ defmodule Observer.Check.JSONComparison do
     operation: operation
   } = _check) do
     case JSONComparison.get(target, operation, comparison, value) do
-      true ->
-        {:ok, changeset} = Value.create_changeset(:nominal, id)
+      {true, returned_value} ->
+        {:ok, changeset} = Value.create_changeset(:nominal, id, returned_value)
         {:ok, _} = Value.insert(changeset)
-      _ ->
-        {:ok, changeset} = Value.create_changeset(:critical, id)
+      {false, returned_value} ->
+        {:ok, changeset} = Value.create_changeset(:critical, id, returned_value)
         {:ok, _} = Value.insert(changeset)
     end
   end

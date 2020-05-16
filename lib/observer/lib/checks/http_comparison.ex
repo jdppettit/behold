@@ -9,11 +9,11 @@ defmodule Observer.Check.HTTPComparison do
 
   def do_check(%{value: value, target: target, id: id} = _check) do
     case HTTPComparison.get(target, value) do
-      true ->
-        {:ok, changeset} = Value.create_changeset(:nominal, id)
+      {true, returned_value} ->
+        {:ok, changeset} = Value.create_changeset(:nominal, id, returned_value)
         {:ok, _} = Value.insert(changeset)
-      _ ->
-        {:ok, changeset} = Value.create_changeset(:critical, id)
+      {false, returned_value} ->
+        {:ok, changeset} = Value.create_changeset(:critical, id, returned_value)
         {:ok, _} = Value.insert(changeset)
     end
   end
