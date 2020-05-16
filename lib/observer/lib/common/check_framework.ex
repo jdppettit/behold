@@ -24,6 +24,10 @@ defmodule Observer.Common.CheckFramework do
         {:noreply, %{check: check}}
       end
 
+      def handle_info(:terminate, state) do
+        {:stop, :normal, state}
+      end
+
       def name(%{type: type, id: id} = _check) do
         String.to_atom("#{id}-#{Atom.to_string(type)}")
       end

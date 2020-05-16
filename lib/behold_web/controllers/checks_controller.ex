@@ -39,7 +39,8 @@ defmodule BeholdWeb.ChecksController do
          {:ok, check_id} <- extract_id(params),
          {:ok, check_model} <- Check.get_by_id(check_id),
          {:ok, changeset} <- Check.create_changeset(check_model, mapped_params),
-         {:ok, updated_model} <- Check.update(changeset)
+         {:ok, updated_model} <- Check.update(changeset),
+         {:ok, _type} <- possibly_kill_process(params, check_model)
     do
       conn
       |> render("check_updated.json", check: updated_model)
@@ -60,7 +61,8 @@ defmodule BeholdWeb.ChecksController do
         conn
         |> put_status(400)
         |> render("invalid_parameters.json", message: "Invalid parameters provided")
-      _ ->
+      error ->
+        Logger.error("#{__MODULE__}: update endpoint got unexpected error: #{inspect(error)}")
         conn
         |> put_status(500)
         |> render("server_error.json", message: "Unexpected server error")
@@ -133,6 +135,13 @@ defmodule BeholdWeb.ChecksController do
         comparison: get_key(params, "comparison")
       } |> filter_nil_keys
     }
+  end
+
+  def possibly_kill_process(params, %{id: id, type: type} = model) do
+    if Map.has_key?(params, :type) and not is_nil(Map.get(params, :type)) do
+      Observer.Supervisor.SchedulerSupervisor.kill_child(String.to_atom("#{id}-#{Atom.to_string(type)}"))
+    end
+    {:ok, type}
   end
 
   def extract_id(params) do

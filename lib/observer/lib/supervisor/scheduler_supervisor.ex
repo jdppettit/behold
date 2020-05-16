@@ -23,35 +23,44 @@ defmodule Observer.Supervisor.SchedulerSupervisor do
     |> Enum.map(fn %{type: type} = check ->
       case type do
         :http ->
-          if is_nil(Process.whereis(String.to_atom("#{check.id}-#{Atom.to_string(check.type)}"))) do
-            DynamicSupervisor.start_child(__MODULE__, %{
-              id: Observer.Check.HTTP,
-              start: {Observer.Check.HTTP, :start_link, [Map.from_struct(check)]}
-            })
-          end
+          DynamicSupervisor.start_child(__MODULE__, %{
+            id: Observer.Check.HTTP,
+            start: {Observer.Check.HTTP, :start_link, [Map.from_struct(check)]}
+          })
         :ping ->
-          if is_nil(Process.whereis(String.to_atom("#{check.id}-#{Atom.to_string(check.type)}"))) do
-            DynamicSupervisor.start_child(__MODULE__, %{
-              id: Observer.Check.Ping,
-              start: {Observer.Check.Ping, :start_link, [Map.from_struct(check)]}
-            })
-          end
+          DynamicSupervisor.start_child(__MODULE__, %{
+            id: Observer.Check.Ping,
+            start: {Observer.Check.Ping, :start_link, [Map.from_struct(check)]}
+          })
         :http_json ->
-          if is_nil(Process.whereis(String.to_atom("#{check.id}-#{Atom.to_string(check.type)}"))) do
-            DynamicSupervisor.start_child(__MODULE__, %{
-              id: Observer.Check.JSON,
-              start: {Observer.Check.JSON, :start_link, [Map.from_struct(check)]}
-            })
-          end
+          DynamicSupervisor.start_child(__MODULE__, %{
+            id: Observer.Check.JSON,
+            start: {Observer.Check.JSON, :start_link, [Map.from_struct(check)]}
+          })
         :http_json_comparison ->
-          if is_nil(Process.whereis(String.to_atom("#{check.id}-#{Atom.to_string(check.type)}"))) do
-            DynamicSupervisor.start_child(__MODULE__, %{
-              id: Observer.Check.JSONComparison,
-              start: {Observer.Check.JSONComparison, :start_link, [Map.from_struct(check)]}
-            })
-          end
+          DynamicSupervisor.start_child(__MODULE__, %{
+            id: Observer.Check.JSONComparison,
+            start: {Observer.Check.JSONComparison, :start_link, [Map.from_struct(check)]}
+          })
       end
     end)
+  end
+
+  def get_child_by_name(name) do
+    Process.whereis(String.to_atom(name))
+  end
+
+  def kill_child(name) do
+    case Process.whereis(String.to_atom(name)) do
+      pid when not is_nil(pid) ->
+        DynamicSupervisor.terminate_child(__MODULE__, pid)
+        Logger.info("#{__MODULE__}: Terminating child #{name} / #{pid} because of update")
+        {:ok, pid}
+      nil ->
+        {:error, name}
+      error ->
+        {:error, error}
+    end
   end
 
   def schedule_rollups do
