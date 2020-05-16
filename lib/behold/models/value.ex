@@ -88,6 +88,7 @@ defmodule Behold.Models.Value do
   def get_by_check_id(check_id, last \\ 10) do 
     query = from values in __MODULE__,
       where: values.check_id == ^check_id,
+      order_by: [desc: values.inserted_at],
       limit: ^last
 
     case Behold.Repo.all(query) do
