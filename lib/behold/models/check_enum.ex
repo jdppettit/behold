@@ -6,7 +6,8 @@ defmodule CheckTypes do
       :ping,
       :http_json,
       :http_json_comparison,
-      :http_comparison
+      :http_comparison,
+      :dns
     ]
 end
 

@@ -128,5 +128,9 @@ defmodule Observer.Common.Common do
     Float.to_string(val)
   end
 
+  def convert_to_string(val) when is_atom(val) do
+    Atom.to_string(val)
+  end
+
   def convert_to_string(val), do: val
 end

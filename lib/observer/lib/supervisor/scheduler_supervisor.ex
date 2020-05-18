@@ -42,6 +42,16 @@ defmodule Observer.Supervisor.SchedulerSupervisor do
             id: Observer.Check.JSONComparison,
             start: {Observer.Check.JSONComparison, :start_link, [Map.from_struct(check)]}
           })
+        :http_comparison ->
+          DynamicSupervisor.start_child(__MODULE__, %{
+            id: Observer.Check.HTTPComparison,
+            start: {Observer.Check.HTTPComparison, :start_link, [Map.from_struct(check)]}
+          })
+        :dns ->
+          DynamicSupervisor.start_child(__MODULE__, %{
+            id: Observer.Check.DNS,
+            start: {Observer.Check.DNS, :start_link, [Map.from_struct(check)]}
+          })
       end
     end)
   end

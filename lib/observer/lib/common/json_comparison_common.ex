@@ -12,7 +12,7 @@ defmodule Observer.Common.JSONComparison do
         comparison,
         value |> split_value()
       )
-    catch
+    rescue
       e ->
         Logger.error("#{__MODULE__}: Error in get JSON Comparison #{inspect(e)}")
         {false, "json_error"}
@@ -32,7 +32,7 @@ defmodule Observer.Common.JSONComparison do
               {Common.do_compare(operation, val, comparison), val}
           end
       end
-    catch
+    rescue
       e ->
         Logger.error("#{__MODULE__}: Error in validate response #{inspect(e)}")
         {false, "error"}
