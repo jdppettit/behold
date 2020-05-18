@@ -4,9 +4,9 @@ defmodule Observer.Common.HTTPTest do
 
   test "check_return_value/2 properly compares status codes", _ do
     response = HTTP.check_return_value(200, "200")
-    assert response == true
+    assert response == {true, 200}
 
     response = HTTP.check_return_value(201, "200")
-    assert response == false
+    assert response == {false, 201}
   end
 end
