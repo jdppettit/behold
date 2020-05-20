@@ -5,21 +5,21 @@ defmodule BeholdWeb.AlertsView do
 
   def render("alert_created.json", %{alert: alert}) do
     %{
-      message: "Alert created successfully",
+      message: "alert created",
       alert: Helpers.sanitize(alert)
     }
   end
 
   def render("alert_updated.json", %{alert: alert}) do
     %{
-      message: "Alert updated",
+      message: "alert updated",
       alert: Helpers.sanitize(alert)
     }
   end
 
   def render("alerts.json", %{alerts: alerts}) do
     %{
-      message: "Success",
+      message: "success",
       alerts: Enum.map(alerts, fn alert -> Helpers.sanitize(alert) end)
     }
   end
