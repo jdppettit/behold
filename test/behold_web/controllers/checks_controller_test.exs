@@ -2,6 +2,7 @@ defmodule BeholdWeb.Controller.ChecksControllerTest do
   use BeholdWeb.ConnCase
 
   alias Behold.Models.Check
+  alias BeholdWeb.ChecksController
 
   @check_params %{
     value: "<HEAD>",
@@ -109,9 +110,98 @@ defmodule BeholdWeb.Controller.ChecksControllerTest do
     end
 
     test "get returns 404 for check that doesnt exist", %{conn: conn} do
-
       resp = get conn, "api/v1/check/049802948314"
       assert resp.status == 404
+    end
+
+    test "get all checks returns right number of checks", %{conn: conn} do
+      create_check()
+      create_check()
+      create_check()
+
+      resp = get conn, "api/v1/checks"
+      assert resp.status == 200
+      response_body = Poison.decode! resp.resp_body
+      assert is_nil(response_body["checks"]) == false
+      assert length(response_body["checks"]) == 3
+    end
+
+    test "delete actually deletes the check", %{conn: conn} do
+      model = create_check()
+
+      resp = delete conn, "api/v1/check", %{id: model.id}
+      assert resp.status == 200
+      response_body = Poison.decode! resp.resp_body
+      assert response_body["message"] == "check deleted successfully"
+      {code, check_model} = Check.get_by_id(model.id)
+      assert code == :error
+      assert check_model == :not_found
+    end
+  end
+
+  describe "misc functions in checks controller" do
+    test "validate_type/1 returns ok when provided good type", _ do
+      resp = ChecksController.validate_type(:http)
+      assert resp == {:ok, :http}
+    end
+
+    test "validate_type/2 returns error when provided bad type", _ do
+      resp = ChecksController.validate_type(:mcchicken_sandwich)
+      assert resp == {:error, :bad_type}
+    end
+
+    test "extract_params/1 picks keys from map and returns nil filtered map", _ do
+      map = %{
+        "target" => "google.com"
+      }
+
+      resp = ChecksController.extract_params(map)
+      assert resp == {:ok, %{target: "google.com"}}
+    end
+
+    test "extract_params/1 excludes null keys", _ do
+      map = %{
+        "target" => "google.com",
+        "operation" => nil
+      }
+
+      resp = ChecksController.extract_params(map)
+      assert resp == {:ok, %{target: "google.com"}}
+    end
+
+    test "extract_params/1 excludes non valid keys", _ do
+      map = %{
+        "target" => "google.com",
+        "whopper" => "is good"
+      }
+
+      resp = ChecksController.extract_params(map)
+      assert resp == {:ok, %{target: "google.com"}}
+    end
+
+    test "extract_id/1 extracts the id", _ do
+      map = %{"id" => 1}
+
+      resp = ChecksController.extract_id(map)
+      assert resp == {:ok, 1}
+    end
+
+    test "extract_id/1 returns error if no id", _ do
+      map = %{"foo" => 1}
+
+      resp = ChecksController.extract_id(map)
+      assert resp == {:error, :missing_id}
+    end
+
+    test "filter_nil_keys/1 filters nil keys", _ do
+      map = %{
+        id: 1,
+        foo: nil,
+        food: "yes please"
+      }
+
+      resp = ChecksController.filter_nil_keys(map)
+      assert resp == %{id: 1, food: "yes please"}
     end
   end
 end
