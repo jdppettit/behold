@@ -17,6 +17,12 @@ defmodule BeholdWeb.AlertsView do
     }
   end
 
+  def render("alert_deleted.json", _) do
+    %{
+      message: "alert deleted"
+    }
+  end
+
   def render("alerts.json", %{alerts: alerts}) do
     %{
       message: "success",

@@ -49,7 +49,7 @@ defmodule BeholdWeb.AlertsController do
     do
       conn
       |> render("alert_updated.json", alert: updated_model)
-    else
+    else     
       {:error, :missing_check_id} ->
         conn
         |> put_status(400)
