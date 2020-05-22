@@ -4,10 +4,11 @@ jobs:
     working_directory: ~/behold
     docker:
       - image: circleci/elixir:1.6-otp-21-node-browsers-legacy
-      - image: postgres:9.6-jessie
-        POSTGRES_USER: behold
-        POSTGRES_PASSWORD: beholdtest
-        POSTGRES_DB: behold_test
+      - image: postgres:13-alpine
+        environment: 
+          POSTGRES_USER: behold
+          POSTGRES_PASSWORD: beholdtest
+          POSTGRES_DB: behold_test
     steps:
       - checkout
       - run:
