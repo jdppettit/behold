@@ -3,7 +3,7 @@ jobs:
   test:
     working_directory: ~/behold
     docker:
-      - image: circleci/elixir:1.6-otp-21-node-browsers-legacy
+      - image: circleci/elixir:1.8-otp-22-node-browsers-legacy
       - image: postgres:13-alpine
         environment: 
           POSTGRES_USER: behold
