@@ -1,0 +1,28 @@
+version: 2
+jobs:
+  test:
+    working_directory: ~/behold
+    docker:
+      - image: circleci/elixir:1.6-otp-21-node-browsers-legacy
+      - image: postgres:9.6-jessie
+        POSTGRES_USER: behold
+        POSTGRES_PASSWORD: beholdtest
+        POSTGRES_DB: behold_test
+    steps:
+      - checkout
+      - run:
+          name: Install deps
+          command: mix deps.get
+      - run:
+          name: Database setup
+          command: mix ecto.create && mix ecto.migrate
+      - run:
+          name: Execute tests
+          command: mix test
+
+workflows:
+  version: 2
+
+  run_tests:
+    jobs:
+      - test
