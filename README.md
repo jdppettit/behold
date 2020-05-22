@@ -1,5 +1,7 @@
 # Behold
 
+[![silverp1](https://circleci.com/gh/silverp1/behold.svg?style=shield)](https://app.circleci.com/pipelines/github/silverp1/behold)
+
 Behold is a light monitoring application written in Elixir and utilizing some basic OTP principals. This was primarily an exercise in learning how to do basic OTP stuff. 
 
 ## Installation
