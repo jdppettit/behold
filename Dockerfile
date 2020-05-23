@@ -1,5 +1,8 @@
 FROM elixir:1.7.3-alpine as asset-builder-mix-getter
 
+RUN apk add --no-cache \
+        git
+
 ENV HOME=/opt/app
 WORKDIR $HOME
 
@@ -25,6 +28,9 @@ RUN ./node_modules/brunch/bin/brunch build --production
 
 ############################################################
 FROM bitwalker/alpine-elixir-phoenix:latest
+
+RUN apk add --no-cache \
+        git
 
 ENV HOME=/opt/app
 ENV PORT=4040
