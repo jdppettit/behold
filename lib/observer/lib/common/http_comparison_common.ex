@@ -23,7 +23,7 @@ defmodule Observer.Common.HTTPComparison do
   def format_response_body_for_database(body) do
     if String.length(body) > 255 do
       body = body |> String.slice(0..251)
-      "#{inspect(body)}..."
+      "#{body}..."
     else
       "#{inspect(body)}"
     end

@@ -37,8 +37,8 @@ defmodule Observer.Common.HTTPComparisonTest do
         })();</script></body></html>
     """
     {resp, val} = HTTPComparison.check_return_value(%{body: body}, "Home Assistant")
-    assert resp == true
-    assert val == "\"  <!DOCTYPE html><html lang=\\\"en\\\"><head><link rel=\\\"preload\\\" href=\\\"/frontend_latest/core.2de630fb.js\\\" as=\\\"script\\\" crossorigin=\\\"use-credentials\\\"><link rel=\\\"preload\\\" href=\\\"/static/fonts/roboto/Roboto-Regular.woff2\\\" as=\\\"font\\\" crossorigin><link rel=\\\"preload\\\"\"..."
+    assert val == "  <!DOCTYPE html><html lang=\"en\"><head><link rel=\"preload\" href=\"/frontend_latest/core.2de630fb.js\" as=\"script\" crossorigin=\"use-credentials\"><link rel=\"preload\" href=\"/static/fonts/roboto/Roboto-Regular.woff2\" as=\"font\" crossorigin><link rel=\"preload\"..."
+    assert String.length(val) == 255
   end
 
   test "format_response_body_for_database/1 truncates correctly", _ do
@@ -60,7 +60,8 @@ defmodule Observer.Common.HTTPComparisonTest do
         })();</script></body></html>
     """
     val = HTTPComparison.format_response_body_for_database(body)
-    assert val == "\"  <!DOCTYPE html><html lang=\\\"en\\\"><head><link rel=\\\"preload\\\" href=\\\"/frontend_latest/core.2de630fb.js\\\" as=\\\"script\\\" crossorigin=\\\"use-credentials\\\"><link rel=\\\"preload\\\" href=\\\"/static/fonts/roboto/Roboto-Regular.woff2\\\" as=\\\"font\\\" crossorigin><link rel=\\\"preload\\\"\"..."
+    assert val == "  <!DOCTYPE html><html lang=\"en\"><head><link rel=\"preload\" href=\"/frontend_latest/core.2de630fb.js\" as=\"script\" crossorigin=\"use-credentials\"><link rel=\"preload\" href=\"/static/fonts/roboto/Roboto-Regular.woff2\" as=\"font\" crossorigin><link rel=\"preload\"..."
+    assert String.length(val) == 255
   end
   
   test "format_response_body_for_database/1 does not truncate small strings", _ do
