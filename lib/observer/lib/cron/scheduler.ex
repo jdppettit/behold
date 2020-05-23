@@ -5,7 +5,7 @@ defmodule Observer.Cron.Scheduler do
   @interval 60_000
 
   def start_link do
-    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
+    GenServer.start_link(__MODULE__, :ok, name: :scheduler)
   end
 
   def init(:ok) do

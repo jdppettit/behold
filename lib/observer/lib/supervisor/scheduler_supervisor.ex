@@ -73,6 +73,42 @@ defmodule Observer.Supervisor.SchedulerSupervisor do
     end
   end
 
+  def health_data do
+    {:ok, checks} = Behold.Models.Check.get_all_valid_checks()
+    processes_expected = length(checks)
+
+    check_processes_list = checks
+    |> Enum.map(fn check -> 
+      if not is_nil(get_child_by_name("#{check.id}-#{check.type}")) do
+        %{id: check.id, status: "running", type: "check"}
+      else
+        %{id: check.id, status: "not_running", type: "check"}
+      end
+    end)
+
+    rollup_processes_list = checks
+    |> Enum.map(fn check -> 
+      if not is_nil(get_child_by_name("#{check.id}-rollup")) do
+        %{id: check.id, status: "running", type: "rollup"}
+      else
+        %{id: check.id, status: "not_running", type: "rollup"}
+      end
+    end)
+
+    scheduler_alive? = if not is_nil(get_child_by_name("scheduler")) do
+      true
+    else
+      false
+    end
+
+    {:ok, %{
+      expected_count: processes_expected,
+      check_processes: check_processes_list,
+      rollup_processes: rollup_processes_list,
+      scheduler_alive: scheduler_alive?
+    }}
+  end
+
   def schedule_rollups do
     Logger.debug("#{__MODULE__}: Running rollup checks")
     {:ok, checks} = Behold.Models.Check.get_all_valid_checks()
