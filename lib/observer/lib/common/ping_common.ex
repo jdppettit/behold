@@ -1,30 +1,40 @@
 defmodule Observer.Common.Ping do
+  alias Observer.Common.Common
+  require Logger
+
   def ping(host) do
-    case System.cmd("ping", [host, "-c", "1"]) do
-      {result, 0} ->
-        {check_result(result), result}
-      {result, _} ->
-        {false, result}
+    try do
+      formatted_host = host |> format_host()
+      case Ping.ping(formatted_host) do
+        {:ok, details} ->
+          {true, details}
+        {:error, :timeout} ->
+          {false, "timeout"}
+        {:error, :icmp_error} ->
+          {false, "icmp_error"}
+        {:error, :permission_error} ->
+          {false, "permission error"}
+        e ->
+          Logger.error("#{__MODULE__}: Got error #{inspect(e)} doing ping")
+          {false, "unexpected error"}
+      end 
+    rescue
       e ->
-        {false, e}
+        Logger.error("#{__MODULE__}: Unexpected error in ping check: #{inspect(e)}")
+        {false, "unexpected error"}
     end
   end
 
-  def check_result(result) do
-    result = result
-    |> String.split("\n")
-    |> Enum.at(4)
-
-    if is_nil(result) do
-      false
-    else
-      Regex.scan(~r/[0-9]/, result, capture: :all)
-      |> List.flatten
-      |> (fn list ->
-        first = Enum.at(list, 0)
-        second = Enum.at(list, 1)
-        first == second
-      end).()
-    end
+  def format_host(string) do
+    formatted_host = string
+    |> String.split(".")
+    |> Enum.map(fn item -> 
+      {:ok, int} = Common.convert_string_to_int(item)
+      int
+    end)
+    |> (fn list -> 
+        list 
+        |> List.to_tuple
+    end).()
   end
 end

@@ -48,7 +48,8 @@ defmodule Behold.Mixfile do
       {:bamboo, "~> 1.4"},
       {:timex, "~> 3.5"},
       {:cors_plug, "~> 1.5"},
-      {:dns, git: "https://github.com/silverp1/elixir-dns"}
+      {:dns, git: "https://github.com/silverp1/elixir-dns"},
+      {:ping, git: "https://github.com/silverp1/elixir-ping"}
     ]
   end
 

@@ -1,6 +1,4 @@
 defmodule Observer.Common.Common do
-  alias Observer.Cron.Rollup
-
   def convert_string_to_int(string) when is_nil(string), do: {:error, string}
   def convert_string_to_int(string) when is_integer(string), do: {:ok, string}
   def convert_string_to_int(string) do
@@ -130,6 +128,10 @@ defmodule Observer.Common.Common do
 
   def convert_to_string(val) when is_atom(val) do
     Atom.to_string(val)
+  end
+
+  def convert_to_string(val) when is_map(val) do
+    "#{inspect(val)}"
   end
 
   def convert_to_string(val), do: val
