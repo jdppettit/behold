@@ -33,7 +33,7 @@ defmodule BeholdWeb.HealthController do
         alive_count: get_running_count(health_data.rollup_processes),
         total_count: health_data.expected_count,
         all_alive: rollup_all_good?,
-        process_data: health_data.check_processes    
+        process_data: health_data.rollup_processes    
       }
     }}
   end

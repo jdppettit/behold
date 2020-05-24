@@ -80,20 +80,20 @@ defmodule Observer.Supervisor.SchedulerSupervisor do
     check_processes_list = checks
     |> Enum.map(fn check -> 
       if not is_nil(get_child_by_name("#{check.id}-#{check.type}")) do
-        %{id: check.id, status: "running", type: "check"}
+        %{id: check.id, status: "running", type: "check", name: "#{check.id}-#{check.type}"}
       else
-        %{id: check.id, status: "not_running", type: "check"}
+        %{id: check.id, status: "not_running", type: "check", name: "#{check.id}-#{check.type}"}
       end
     end)
 
     rollup_processes_list = checks
     |> Enum.map(fn check -> 
       if not is_nil(get_child_by_name("#{check.id}-rollup")) do
-        %{id: check.id, status: "running", type: "rollup"}
+        %{id: check.id, status: "running", type: "rollup", name: "#{check.id}-rollup"}
       else
-        %{id: check.id, status: "not_running", type: "rollup"}
+        %{id: check.id, status: "not_running", type: "rollup", name: "#{check.id}-rollup"}
       end
-    end)
+    end) |> IO.inspect(label: "rollups")
 
     scheduler_alive? = if not is_nil(get_child_by_name("scheduler")) do
       true
