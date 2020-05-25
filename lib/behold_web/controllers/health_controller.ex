@@ -17,6 +17,26 @@ defmodule BeholdWeb.HealthController do
     end
   end
 
+  def restart(conn, %{"name" => process_name } = params) do
+    with {:ok, _pid} <- Observer.Supervisor.SchedulerSupervisor.kill_child(process_name) do
+      conn
+      |> render("restart_success.json", message: "Process restart requested")
+    else
+      {:error, :not_running} ->
+        conn
+        |> put_status(404)
+        |> render("not_found.json", message: "Invalid process provided")
+      {:error, :unexpected_error} ->
+        conn
+        |> put_status(500)
+        |> render("server_error.json", message: "Unexpected server error")        
+      _ ->
+        conn
+        |> put_status(500)
+        |> render("server_error.json", message: "Unexpected server error")
+    end
+  end
+
   def enrich_health_data(health_data) do
     check_all_good? = health_data.expected_count == get_running_count(health_data.check_processes)
     rollup_all_good? = health_data.expected_count == get_running_count(health_data.rollup_processes)

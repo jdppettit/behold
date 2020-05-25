@@ -29,5 +29,6 @@ defmodule BeholdWeb.Router do
     get "/alerts", AlertsController, :get_all
 
     get "/health", HealthController, :get
+    post "/health/restart", HealthController, :restart
   end
 end

@@ -64,12 +64,12 @@ defmodule Observer.Supervisor.SchedulerSupervisor do
     case Process.whereis(String.to_atom(name)) do
       pid when not is_nil(pid) ->
         DynamicSupervisor.terminate_child(__MODULE__, pid)
-        Logger.info("#{__MODULE__}: Terminating child #{name} / #{pid} because of update")
-        {:ok, pid}
+        Logger.info("#{__MODULE__}: Terminating child #{inspect(name)} because of update")
+        {:ok, nil}
       nil ->
-        {:error, name}
+        {:error, :not_running}
       error ->
-        {:error, error}
+        {:error, :unexpected_error}
     end
   end
 
@@ -93,7 +93,7 @@ defmodule Observer.Supervisor.SchedulerSupervisor do
       else
         %{id: check.id, status: "not_running", type: "rollup", name: "#{check.id}-rollup"}
       end
-    end) |> IO.inspect(label: "rollups")
+    end)
 
     scheduler_alive? = if not is_nil(get_child_by_name("scheduler")) do
       true
