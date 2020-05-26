@@ -7,48 +7,47 @@ defmodule Observer.Common.Notification do
   @bad_types [:critical, :warning]
   @good_types [:nominal]
 
+  def maybe_send_notification(
+    %{id: id} = check,
+    last_state_change
+  ) do
+    with {:ok, alerts} <- Alert.get_all_valid_alerts(id) do
+      alerts
+      |> Enum.map(fn alert -> maybe_send_notification(check, alert, last_state_change) end)
+    else
+      e ->
+        Logger.error("#{__MODULE__}: Failed to send notification for check #{check.id} because #{inspect(e)}")
+    end 
+  end
+
   # This case will only fire the initial bad notification
   # and a recovery notification
   def maybe_send_notification(
     %{
-      interval: interval,
       id: id
     } = check,
+    %{
+      interval: interval
+    } = alert,
     last_state_change
   ) when is_nil(interval) do
     Logger.debug("#{__MODULE__}: In no interval track")
-    with {:ok, alerts} <- Alert.get_all_valid_alerts(id) do
-      Logger.debug("#{__MODULE__}: Valid alerts: #{inspect(alerts)}")
-      alerts
-      |> Enum.map(fn alert ->
-        determine_notification_to_send(check, alert, last_state_change)
-      end)
-    else
-      e ->
-        Logger.error("#{__MODULE__}: Failed to send notification for check #{check.id} because #{inspect(e)}")
-    end
+    determine_notification_to_send(check, alert, last_state_change)
   end
 
   # This case will fire if there is an interval, this means we should send
   # notifications every time the interval has passed and when recovery happens
   def maybe_send_notification(
     %{
-      interval: interval,
       id: id
     } = check,
+    %{
+      interval: interval
+    } = alert,
     last_state_change
   ) when not is_nil(interval) do
     Logger.debug("#{__MODULE__}: In interval track")
-    with {:ok, alerts} <- validate_timing(check) do
-      Logger.debug("#{__MODULE__}: Valid alerts: #{inspect(alerts)}")
-      alerts
-      |> Enum.map(fn alert ->
-        determine_notification_to_send(check, alert, last_state_change)
-      end)
-    else
-      e ->
-        Logger.error("#{__MODULE__}: Failed to send notification for check #{check.id} because #{inspect(e)}")
-    end
+    determine_notification_to_send(check, alert, last_state_change)
   end
 
   def validate_timing(%{id: id} = _check) do
