@@ -78,6 +78,39 @@ defmodule Behold.Models.Value do
     end
   end
 
+  def get_recent_values_by_value_type(type, threshold \\ 10) do
+    query = from values in __MODULE__,
+      where: values.value == ^type,
+      order_by: [desc: values.inserted_at],
+      limit: ^threshold
+
+    case Behold.Repo.all(query) do
+      [_ | _] = values ->
+        {:ok, values |> Behold.Repo.preload(:check)}
+      [] = values ->
+        {:ok, values}
+      _error ->
+        {:error, :database_error}  
+    end 
+  end
+
+  def get_recent_values_by_value_type_and_check_id(type, check_id, threshold \\ 10) do
+    query = from values in __MODULE__,
+      where: values.value == ^type,
+      where: values.check_id == ^check_id,
+      order_by: [desc: values.inserted_at],
+      limit: ^threshold
+
+    case Behold.Repo.all(query) do
+      [_ | _] = values ->
+        {:ok, values |> Behold.Repo.preload(:check)}
+      [] = values ->
+        {:ok, values}
+      _error ->
+        {:error, :database_error}  
+    end 
+  end
+
   def delete_by_check_id(check_id) do
     query = from values in __MODULE__,
       where: values.check_id == ^check_id

@@ -22,6 +22,8 @@ defmodule BeholdWeb.Router do
     delete "/check", ChecksController, :delete
 
     get "/check/:check_id/values", ValuesController, :get
+    get "/values/failed", ValuesController, :failed_values_overall
+    get "/check/:check_id/values/failed", ValuesController, :failed_values_by_check
 
     post "/alert", AlertsController, :create
     put "/alert", AlertsController, :update
