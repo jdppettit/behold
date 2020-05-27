@@ -49,7 +49,9 @@ defmodule Behold.Mixfile do
       {:timex, "~> 3.5"},
       {:cors_plug, "~> 1.5"},
       {:dns, git: "https://github.com/silverp1/elixir-dns"},
-      {:ping, git: "https://github.com/silverp1/elixir-ping"}
+      {:ping, git: "https://github.com/silverp1/elixir-ping"},
+      {:sentry, "~> 7.0"},
+      {:jason, "~> 1.1"}
     ]
   end
 
