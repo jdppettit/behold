@@ -1,5 +1,7 @@
 defmodule BeholdWeb.Router do
   use BeholdWeb, :router
+  use Plug.ErrorHandler
+  use Sentry.Plug
 
   pipeline :browser do
     plug :accepts, ["html"]

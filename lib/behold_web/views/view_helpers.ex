@@ -32,7 +32,7 @@ defmodule BeholdWeb.Views.Helpers do
   end
 
   def sanitize(%Behold.Models.Value{} = model) do
-    if not is_nil(model.check.type) do
+    if not is_nil(model.check) and is_map(model.check) do
       updated_model = model
       |> Map.drop([
         :__meta__
