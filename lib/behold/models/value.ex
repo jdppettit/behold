@@ -115,10 +115,7 @@ defmodule Behold.Models.Value do
     query = from values in __MODULE__,
       where: values.check_id == ^check_id
 
-    Behold.Repo.all(query)
-    |> Enum.map(fn f ->
-      Behold.Repo.delete(f)
-    end)
+    Behold.Repo.delete_all(query)
     {:ok, nil}
   end
 
