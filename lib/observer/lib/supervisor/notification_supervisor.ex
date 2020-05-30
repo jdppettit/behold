@@ -9,6 +9,10 @@ defmodule Observer.Supervisor.NotificationSupervisor do
   end
 
   def init(:ok) do
-    DynamicSupervisor.init(strategy: :one_for_one)
+    DynamicSupervisor.init([
+      strategy: :one_for_one,
+      max_restarts: 1000,
+      max_seconds: 5
+    ])
   end
 end
