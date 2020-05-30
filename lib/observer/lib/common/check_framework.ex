@@ -4,7 +4,7 @@ defmodule Observer.Common.CheckFramework do
   alias Behold.Models.Check
 
   defmacro __using__(opts) do
-    name = Keyword.get(opts, :name, "Unkown")
+    name = Keyword.get(opts, :name, "Unknown")
 
     quote do
       def start_link(%{type: type, id: id} = check) do
@@ -20,6 +20,7 @@ defmodule Observer.Common.CheckFramework do
       def handle_info(:fire_check, %{check: %{id: id}} = check) do
         {:ok, check} = Check.get_by_id(id)
         do_check(check)
+        Behold.Common.ChecksCounter.inc(:behold_checks_total, [:checks])
         Process.send_after(self(), :fire_check, check.interval)
         {:noreply, %{check: check}}
       end

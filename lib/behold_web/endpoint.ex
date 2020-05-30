@@ -36,6 +36,7 @@ defmodule BeholdWeb.Endpoint do
     signing_salt: "WEoa8/rE"
 
   plug CORSPlug, origin: "*"
+  plug Behold.Common.MetricsPlug
 
   plug BeholdWeb.Router
 

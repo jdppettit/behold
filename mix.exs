@@ -53,7 +53,8 @@ defmodule Behold.Mixfile do
       {:sentry, "~> 7.0"},
       {:jason, "~> 1.1"},
       {:prometheus_ex, "~> 3.0"},
-      {:logglix, git: "https://github.com/silverp1/logglix"}
+      {:logglix, git: "https://github.com/silverp1/logglix"},
+      {:prometheus_plugs, "~> 1.1"}
     ]
   end
 

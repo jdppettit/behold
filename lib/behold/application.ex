@@ -24,6 +24,8 @@ defmodule Behold.Application do
       # worker(Behold.Worker, [arg1, arg2, arg3]),
     ]
 
+    Behold.Common.MetricsSetup.setup()
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Behold.Supervisor]
