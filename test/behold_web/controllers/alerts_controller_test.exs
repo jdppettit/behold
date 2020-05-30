@@ -10,7 +10,8 @@ defmodule BeholdWeb.Controller.AlertsControllerTest do
       interval: 5000,
       name: "test",
       target: "foo.com",
-      type: "dns"
+      type: "dns",
+      unique_id: "foo"
     })
     {:ok, model} = Check.insert(changeset)
     model

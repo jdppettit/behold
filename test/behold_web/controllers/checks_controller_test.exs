@@ -9,7 +9,8 @@ defmodule BeholdWeb.Controller.ChecksControllerTest do
     type: "http_comparison",
     target: "http://google.com",
     name: "Local DNS Check",
-    interval: 5000
+    interval: 5000,
+    unique_id: "foo"
   }
 
   @check_params_bad_type %{
@@ -17,7 +18,8 @@ defmodule BeholdWeb.Controller.ChecksControllerTest do
     type: "spaghetti_carbonara",
     target: "http://google.com",
     name: "Local DNS Check",
-    interval: 5000
+    interval: 5000,
+    unique_id: "foo"
   }
 
   def create_check() do
@@ -26,7 +28,8 @@ defmodule BeholdWeb.Controller.ChecksControllerTest do
       interval: 5000,
       name: "test",
       target: "foo.com",
-      type: "dns"
+      type: "dns",
+      unique_id: "foo"
     })
     {:ok, model} = Check.insert(changeset)
     model
@@ -116,14 +119,12 @@ defmodule BeholdWeb.Controller.ChecksControllerTest do
 
     test "get all checks returns right number of checks", %{conn: conn} do
       create_check()
-      create_check()
-      create_check()
 
       resp = get conn, "api/v1/checks"
       assert resp.status == 200
       response_body = Poison.decode! resp.resp_body
       assert is_nil(response_body["checks"]) == false
-      assert length(response_body["checks"]) == 3
+      assert length(response_body["checks"]) == 1
     end
 
     test "delete actually deletes the check", %{conn: conn} do

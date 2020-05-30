@@ -14,6 +14,7 @@ defmodule Behold.Models.Check do
     field :operation, CheckOperationTypes
     field :comparison, :string
     field :last_alerted_for, CheckStateTypes
+    field :unique_id, :string
 
     has_many :alerts, Behold.Models.Alert
 
@@ -28,7 +29,9 @@ defmodule Behold.Models.Check do
       :value,
       :interval,
       :target,
+      :unique_id
     ])
+    |> unique_constraint(:unique_id)
   end
 
   def create_changeset(%__MODULE__{} = model, type, value, interval, target) do
@@ -89,7 +92,14 @@ defmodule Behold.Models.Check do
     case Behold.Repo.insert(changeset) do
       {:ok, model} ->
         {:ok, model}
-      {_, _} ->
+      {:error, %{errors: [
+        unique_id: {"has already been taken", [
+          constraint: :unique, constraint_name: "checks_unique_id_index"
+        ]
+      }]}} ->
+        Logger.error("#{__MODULE__}: Rejecting changeset because unique_id already exists")
+        {:error, :unique_id_invalid}
+      {a, b} ->
         Logger.error("#{__MODULE__}: Problem inserting record #{inspect(changeset)}")
         {:error, :database_error}
     end

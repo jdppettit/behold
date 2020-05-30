@@ -26,6 +26,10 @@ defmodule BeholdWeb.ChecksController do
         conn
         |> put_status(400)
         |> render("invalid_parameters.json", message: "Invalid parameters provided")
+      {:error, :unique_id_invalid} ->
+        conn
+        |> put_status(200)
+        |> render("invalid_parameters.json", message: "Check created previously")
       _ ->
         conn
         |> put_status(500)
@@ -61,6 +65,10 @@ defmodule BeholdWeb.ChecksController do
         conn
         |> put_status(400)
         |> render("invalid_parameters.json", message: "Invalid parameters provided")
+      {:error, :unique_id_invalid} ->
+        conn
+        |> put_status(200)
+        |> render("invalid_parameters.json", message: "Check created previously")
       error ->
         Logger.error("#{__MODULE__}: update endpoint got unexpected error: #{inspect(error)}")
         conn
@@ -134,7 +142,8 @@ defmodule BeholdWeb.ChecksController do
         state: get_key(params, "state"),
         name: get_key(params, "name"),
         operation: get_key(params, "operation"),
-        comparison: get_key(params, "comparison")
+        comparison: get_key(params, "comparison"),
+        unique_id: get_key(params, "unique_id")
       } |> filter_nil_keys
     }
   end

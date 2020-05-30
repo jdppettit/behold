@@ -33,10 +33,10 @@ defmodule Observer.Cron.Rollup do
   def do_rollup(%{id: id} = check) do
     with {:ok, values} <- Value.get_recent_values_by_check_id(id),
          {:ok, alerted?} <- is_alerted?(values),
-         {:ok, translated_alerted_state} <- translate_alerted(alerted?)
+         {:ok, translated_alerted_state} <- translate_alerted(alerted?),
+         :ok <- Check.update_check_state(check, translated_alerted_state)
     do
       Logger.debug("#{__MODULE__}: Rollup finished, updating check #{id} to #{translated_alerted_state}")
-      :ok = Check.update_check_state(check, translated_alerted_state)
       Notification.maybe_send_notification(check, translated_alerted_state)
     else
       error ->

@@ -51,7 +51,8 @@ defmodule Behold.Mixfile do
       {:dns, git: "https://github.com/silverp1/elixir-dns"},
       {:ping, git: "https://github.com/silverp1/elixir-ping"},
       {:sentry, "~> 7.0"},
-      {:jason, "~> 1.1"}
+      {:jason, "~> 1.1"},
+      {:prometheus_ex, "~> 3.0"}
     ]
   end
 
