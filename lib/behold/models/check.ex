@@ -99,7 +99,7 @@ defmodule Behold.Models.Check do
       }]}} ->
         Logger.error("#{__MODULE__}: Rejecting changeset because unique_id already exists")
         {:error, :unique_id_invalid}
-      {a, b} ->
+      {_, _} ->
         Logger.error("#{__MODULE__}: Problem inserting record #{inspect(changeset)}")
         {:error, :database_error}
     end
@@ -124,7 +124,7 @@ defmodule Behold.Models.Check do
         {:ok, checks}
       [] = checks ->
         {:ok, checks}
-      error ->
+      _error ->
         {:error, :database_error}
     end
   end
@@ -138,7 +138,7 @@ defmodule Behold.Models.Check do
         {:ok, checks |> Behold.Repo.preload(:alerts)}
       [] = checks ->
         {:ok, checks}
-      error ->
+      _error ->
         {:error, :database_error}
     end
   end

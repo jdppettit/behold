@@ -20,12 +20,12 @@ defmodule Observer.Common.DNS do
   def deconstruct_value(value) do
     if length(value) > 1 do
       List.last(value)
-      |> (fn {a, b, c, d} = val -> 
+      |> (fn {a, b, c, d} = _val -> 
         "#{a}.#{b}.#{c}.#{d}"
       end).()
     else
       List.first(value)
-      |> (fn {a, b, c, d} = val -> 
+      |> (fn {a, b, c, d} = _val -> 
         "#{a}.#{b}.#{c}.#{d}"
       end).() 
     end

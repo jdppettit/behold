@@ -68,7 +68,7 @@ defmodule Observer.Supervisor.SchedulerSupervisor do
         {:ok, nil}
       nil ->
         {:error, :not_running}
-      error ->
+      _error ->
         {:error, :unexpected_error}
     end
   end

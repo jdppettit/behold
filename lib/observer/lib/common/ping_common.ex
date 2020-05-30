@@ -26,7 +26,7 @@ defmodule Observer.Common.Ping do
   end
 
   def format_host(string) do
-    formatted_host = string
+    string
     |> String.split(".")
     |> Enum.map(fn item -> 
       {:ok, int} = Common.convert_string_to_int(item)

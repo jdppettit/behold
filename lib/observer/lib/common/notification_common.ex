@@ -23,9 +23,7 @@ defmodule Observer.Common.Notification do
   # This case will only fire the initial bad notification
   # and a recovery notification
   def maybe_send_notification(
-    %{
-      id: id
-    } = check,
+    check,
     %{
       interval: interval
     } = alert,
@@ -38,9 +36,7 @@ defmodule Observer.Common.Notification do
   # This case will fire if there is an interval, this means we should send
   # notifications every time the interval has passed and when recovery happens
   def maybe_send_notification(
-    %{
-      id: id
-    } = check,
+    check,
     %{
       interval: interval
     } = alert,

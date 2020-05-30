@@ -7,7 +7,7 @@ defmodule Observer.Check.Ping do
   alias Observer.Common.{Ping}
   alias Behold.Models.Value
 
-  def do_check(%{target: target, id: id} = check) do
+  def do_check(%{target: target, id: id} = _check) do
     case Ping.ping(target) do
       {true, returned_value} ->
         {:ok, changeset} = Value.create_changeset(:nominal, id, returned_value)
