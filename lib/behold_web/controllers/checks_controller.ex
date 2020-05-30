@@ -78,7 +78,11 @@ defmodule BeholdWeb.ChecksController do
   end
 
   def delete(conn, %{"id" => id} = _params) do
-    with {:ok, _} <- Check.delete_by_id(id) do
+    with {:ok, model} <- Check.get_by_id(id),
+         {:ok, _} <- Check.delete_by_id(id),
+         {:ok, :killed_it_dead} <- kill_process(model.id, model.type),
+         {:ok, :killed_it_dead} <- kill_process(model.id, :rollup)
+    do
       conn
       |> render("check_deleted.json")
     else
@@ -150,10 +154,15 @@ defmodule BeholdWeb.ChecksController do
 
   def possibly_kill_process(params, %{id: id, type: type} = model) do
     if Map.has_key?(params, :type) and not is_nil(Map.get(params, :type)) do
-      Observer.Supervisor.SchedulerSupervisor.kill_child(String.to_atom("#{id}-#{Atom.to_string(type)}"))
+      kill_process(id, type)
     end
     {:ok, type}
   end
+
+  def kill_process(id, type) do
+    Observer.Supervisor.SchedulerSupervisor.kill_child("#{id}-#{type}")
+    {:ok, :killed_it_dead}
+  end 
 
   def extract_id(params) do
     id = get_key(params, "id")
