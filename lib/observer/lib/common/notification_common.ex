@@ -1,7 +1,7 @@
 defmodule Observer.Common.Notification do
   require Logger
 
-  alias Behold.Models.{Alert,Check}
+  alias Behold.Models.{Alert,Check,Log}
   alias Observer.Common.Common
 
   @bad_types [:critical, :warning]
@@ -120,22 +120,41 @@ defmodule Observer.Common.Notification do
       Logger.debug("#{__MODULE__}: Notification last alerted state was nil")
       if last_state_change in @bad_types do
         Logger.debug("#{__MODULE__}: Notification last alerted was nil and new state was in bad states, sending bad notification")
+        log_event(check, alert, last_state_change, "down")
         fire_alert_notification(check, alert)
       else
         Logger.debug("#{__MODULE__}: Notification last alerted was nil and new state was in good states, doing nothing")
+        log_event(check, alert, last_state_change, "none")
       end
     else
       if last_alerted_for != last_state_change do
         if last_state_change in @bad_types do
           Logger.debug("#{__MODULE__}: Notification last alerted was #{last_alerted_for} and last_state was in bad types, sending bad notification")
+          log_event(check, alert, last_state_change, "down")
           fire_alert_notification(check, alert)
         else
           if last_alerted_for in @bad_types and last_state_change in @good_types do
             Logger.debug("#{__MODULE__}: Notification last alerted was #{last_alerted_for} and last_state was in good types, sending recovery")
+            log_event(check, alert, last_state_change, "up")
             fire_recovery_notification(check, alert)
           end
         end
       end
     end
   end
+
+  def log_event(
+    %{last_alerted_for: last_alerted_for} = check,
+    %{interval: interval} = alert,
+    last_state_change,
+    notification_type
+  ) do
+    {_, changeset} = Log.create_changeset(%{
+      type: :notification_result,
+      result: "LAF: #{inspect(last_alerted_for)} / LSC: #{inspect(last_state_change)} / Determined type to send: #{inspect(notification_type)} / Interval: #{inspect(interval)} / Check: #{check.id} / Alert: #{alert.id}",
+      target_id: alert.id,
+      target_type: :notification
+    })
+    Log.insert(changeset)
+  end 
 end
