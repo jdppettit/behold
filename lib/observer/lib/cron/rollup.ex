@@ -5,6 +5,7 @@ defmodule Observer.Cron.Rollup do
 
   alias Behold.Models.Value
   alias Behold.Models.Check
+  alias Behold.Models.Log
   alias Observer.Common.Notification
 
   @default_threshold 3
@@ -36,19 +37,37 @@ defmodule Observer.Cron.Rollup do
          {:ok, translated_alerted_state} <- translate_alerted(alerted?),
          :ok <- Check.update_check_state(check, translated_alerted_state)
     do
+      {:ok, changeset} = Log.create_changeset(%{
+        type: :rollup_result,
+        result: "Ran rollup, alerted was #{inspect(alerted?)}, updating check state to #{inspect(translated_alerted_state)}",
+        target_id: id,
+        target_type: :check
+      })
+      {:ok, _model} = Log.insert(changeset)
+
       Logger.debug("#{__MODULE__}: Rollup finished, updating check #{id} to #{translated_alerted_state}")
       Notification.maybe_send_notification(check, translated_alerted_state)
     else
       error ->
+        {:ok, changeset} = Log.create_changeset(%{
+          type: :rollup_result,
+          result: "Ran rollup, resulted in error: #{inspect(error)}",
+          target_id: id,
+          target_type: :check
+        })
+        {:ok, _model} = Log.insert(changeset)
+
         Logger.error("#{__MODULE__}: Rollup error: #{inspect(error)}")
     end
   end
 
   def is_alerted?(values, threshold \\ @default_threshold) do
+    Logger.info("#{__MODULE__}: Got these values: #{inspect(values)}")
     non_ok_count = values
     |> Enum.filter(fn v ->
       v.value == :critical
     end)
+    Logger.info("#{__MODULE__}: Got these non_ok_values: #{inspect(non_ok_count)}")
     {:ok, length(non_ok_count) == threshold}
   end
 
