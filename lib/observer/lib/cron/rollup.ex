@@ -32,7 +32,6 @@ defmodule Observer.Cron.Rollup do
   end
 
   def do_rollup(%{id: id} = check) do
-    IO.inspect(id, label: "id")
     with {:ok, values} <- Value.get_recent_values_by_check_id(id),
          {:ok, alerted?} <- is_alerted?(values),
          {:ok, translated_alerted_state} <- translate_alerted(alerted?),
