@@ -150,10 +150,7 @@ defmodule Behold.Models.Check do
     })
     case changeset.valid? do
       true ->
-        Logger.info("#{__MODULE__}: Updating check #{check.id} with status #{new_state}")
-        {code, _} = Behold.Repo.update(changeset)
-        Logger.info("#{__MODULE__}: Check #{check.id} got #{inspect(code)} updating state")
-        code
+        Behold.Repo.update(changeset)
       false ->
         :error
     end

@@ -24,29 +24,24 @@ defmodule Observer.Cron.Rollup do
     {:ok, %{check: check}}
   end
 
-  def handle_info(:rollup, %{check: %{interval: interval}} = check) do
-    Logger.debug("#{__MODULE__}: Running rollup logic on check #{check.check.id}")
-    do_rollup(check.check)
+  def handle_info(:rollup, %{check: %{interval: interval, id: id}} = check) do
+    Logger.debug("#{__MODULE__}: Running rollup logic on check #{id}")
+    check = do_rollup(check.check)
     Process.send_after(self(), :rollup, interval)
-    {:noreply, check}
+    {:noreply, %{check: Map.from_struct(check)}}
   end
 
   def do_rollup(%{id: id} = check) do
+    IO.inspect(id, label: "id")
     with {:ok, values} <- Value.get_recent_values_by_check_id(id),
          {:ok, alerted?} <- is_alerted?(values),
          {:ok, translated_alerted_state} <- translate_alerted(alerted?),
-         :ok <- Check.update_check_state(check, translated_alerted_state)
+         {:ok, check} <- Check.update_check_state(check, translated_alerted_state)
     do
-      {:ok, changeset} = Log.create_changeset(%{
-        type: :rollup_result,
-        result: "Ran rollup, alerted was #{inspect(alerted?)}, updating check state to #{inspect(translated_alerted_state)}",
-        target_id: id,
-        target_type: :check
-      })
-      {:ok, _model} = Log.insert(changeset)
-
+      log_event(check, alerted?, translated_alerted_state)
       Logger.debug("#{__MODULE__}: Rollup finished, updating check #{id} to #{translated_alerted_state}")
       Notification.maybe_send_notification(check, translated_alerted_state)
+      check
     else
       error ->
         {:ok, changeset} = Log.create_changeset(%{
@@ -62,15 +57,25 @@ defmodule Observer.Cron.Rollup do
   end
 
   def is_alerted?(values, threshold \\ @default_threshold) do
-    Logger.info("#{__MODULE__}: Got these values: #{inspect(values)}")
+    Logger.debug("#{__MODULE__}: Got these values: #{inspect(values)}")
     non_ok_count = values
     |> Enum.filter(fn v ->
       v.value == :critical
     end)
-    Logger.info("#{__MODULE__}: Got these non_ok_values: #{inspect(non_ok_count)}")
+    Logger.debug("#{__MODULE__}: Got these non_ok_values: #{inspect(non_ok_count)}")
     {:ok, length(non_ok_count) == threshold}
   end
 
   def translate_alerted(true), do: {:ok, :critical}
   def translate_alerted(false), do: {:ok, :nominal}
+
+  def log_event(%{id: id} = check, alerted?, translated_alerted_state) do
+    {_, changeset} = Log.create_changeset(%{
+      type: :rollup_result,
+      result: "Ran rollup, alerted was #{inspect(alerted?)}, updating check state to #{inspect(translated_alerted_state)}",
+      target_id: id,
+      target_type: :check
+    })
+    Log.insert(changeset)
+  end 
 end
