@@ -14,6 +14,10 @@ defmodule Observer.Common.Ping do
           {false, "icmp_error"}
         {:error, :permission_error} ->
           {false, "permission error"}
+        {:error, :unreachable_host} ->
+          {false, "host unreachable"}
+        {:error, :unexpected_error} ->
+          {false, "unexpected error"}
         e ->
           Logger.error("#{__MODULE__}: Got error #{inspect(e)} doing ping")
           {false, "unexpected error"}

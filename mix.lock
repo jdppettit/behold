@@ -30,7 +30,7 @@
   "phoenix_html": {:hex, :phoenix_html, "2.14.1", "7dabafadedb552db142aacbd1f11de1c0bbaa247f90c449ca549d5e30bbc66b4", [:mix], [{:plug, "~> 1.5", [hex: :plug, repo: "hexpm", optional: false]}], "hexpm"},
   "phoenix_live_reload": {:hex, :phoenix_live_reload, "1.1.7", "425fff579085f7eacaf009e71940be07338c8d8b78d16e307c50c7d82a381497", [:mix], [{:file_system, "~> 0.2.1 or ~> 0.3", [hex: :file_system, repo: "hexpm", optional: false]}, {:phoenix, "~> 1.0 or ~> 1.2 or ~> 1.3 or ~> 1.4", [hex: :phoenix, repo: "hexpm", optional: false]}], "hexpm"},
   "phoenix_pubsub": {:hex, :phoenix_pubsub, "1.1.2", "496c303bdf1b2e98a9d26e89af5bba3ab487ba3a3735f74bf1f4064d2a845a3e", [:mix], [], "hexpm"},
-  "ping": {:git, "https://github.com/silverp1/elixir-ping", "44c1dcee83690c9ab341475be309f68a2ce85c6d", []},
+  "ping": {:git, "https://github.com/silverp1/elixir-ping", "676c3b54d386a16763111be0c89ddf5dcb8c0b0c", []},
   "pkt": {:git, "git://github.com/msantos/pkt.git", "db7dec36a84484125bfeb4e148ec551cbc2e8997", [ref: "db7dec36a84484125bfeb4e148ec551cbc2e8997"]},
   "plug": {:hex, :plug, "1.10.0", "6508295cbeb4c654860845fb95260737e4a8838d34d115ad76cd487584e2fc4d", [:mix], [{:mime, "~> 1.0", [hex: :mime, repo: "hexpm", optional: false]}, {:plug_crypto, "~> 1.1.1 or ~> 1.2", [hex: :plug_crypto, repo: "hexpm", optional: false]}, {:telemetry, "~> 0.4", [hex: :telemetry, repo: "hexpm", optional: true]}], "hexpm"},
   "plug_cowboy": {:hex, :plug_cowboy, "1.0.0", "2e2a7d3409746d335f451218b8bb0858301c3de6d668c3052716c909936eb57a", [:mix], [{:cowboy, "~> 1.0", [hex: :cowboy, repo: "hexpm", optional: false]}, {:plug, "~> 1.7", [hex: :plug, repo: "hexpm", optional: false]}], "hexpm"},
