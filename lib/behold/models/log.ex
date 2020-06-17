@@ -7,7 +7,7 @@ defmodule Behold.Models.Log do
   schema "logs" do
     field :type, LogTypes
     field :result, :string
-    field :target_id, :id
+    field :target_id, :integer
     field :target_type, LogTargetTypes
 
     timestamps()
