@@ -31,9 +31,9 @@ defmodule Observer.Cron.Rollup do
     {:noreply, %{check: Map.from_struct(check)}}
   end
 
-  def do_rollup(%{id: id} = check) do
+  def do_rollup(%{id: id, threshold: threshold} = check) do
     with {:ok, values} <- Value.get_recent_values_by_check_id(id),
-         {:ok, alerted?} <- is_alerted?(values),
+         {:ok, alerted?} <- is_alerted?(values, threshold),
          {:ok, translated_alerted_state} <- translate_alerted(alerted?),
          {:ok, check} <- Check.update_check_state(check, translated_alerted_state)
     do

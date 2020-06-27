@@ -15,6 +15,7 @@ defmodule Behold.Models.Check do
     field :comparison, :string
     field :last_alerted_for, CheckStateTypes
     field :unique_id, :string
+    field :threshold, :integer, default: 3
 
     has_many :alerts, Behold.Models.Alert
 

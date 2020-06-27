@@ -147,7 +147,8 @@ defmodule BeholdWeb.ChecksController do
         name: get_key(params, "name"),
         operation: get_key(params, "operation"),
         comparison: get_key(params, "comparison"),
-        unique_id: get_key(params, "unique_id")
+        unique_id: get_key(params, "unique_id"),
+        interval: get_key(params, "interval")
       } |> filter_nil_keys
     }
   end
