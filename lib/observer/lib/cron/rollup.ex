@@ -26,7 +26,8 @@ defmodule Observer.Cron.Rollup do
 
   def handle_info(:rollup, %{check: %{interval: interval, id: id}} = check) do
     Logger.debug("#{__MODULE__}: Running rollup logic on check #{id}")
-    check = do_rollup(check.check)
+    updated_check = Check.get_by_id(id)
+    check = do_rollup(updated_check)
     Process.send_after(self(), :rollup, interval)
     {:noreply, %{check: Map.from_struct(check)}}
   end
