@@ -40,7 +40,6 @@ defmodule Observer.Cron.Rollup do
     do
       log_event(check, alerted?, translated_alerted_state)
       Logger.debug("#{__MODULE__}: Rollup finished, updating check #{id} to #{translated_alerted_state}")
-      Notification.maybe_send_notification(check, translated_alerted_state)
       check
     else
       error ->
