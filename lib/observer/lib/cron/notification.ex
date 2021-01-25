@@ -51,7 +51,7 @@ defmodule Observer.Cron.Notification do
   end
 
   def state_has_changed?(%{state: current_state, last_alerted_for: last_state} = _check) do
-    current_state == last_state
+    current_state != last_state
   end
 
   def determine_type_to_send(%{state: current_state, last_alerted_for: last_state} = check) do
