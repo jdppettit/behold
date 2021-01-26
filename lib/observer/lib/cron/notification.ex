@@ -83,6 +83,7 @@ defmodule Observer.Cron.Notification do
   def send_notification(:down, check, alert) do
     case alert.type do
       :email ->
+        Logger.info("#{__MODULE__}: Want to send :down notification for alert #{alert.id}")
         Email.send(check, alert, :down)
         Alert.update_last_sent(alert, Timex.now())
         Check.update_last_alerted(check, :critical)
@@ -98,6 +99,7 @@ defmodule Observer.Cron.Notification do
   def send_notification(:recovery, check, alert) do
     case alert.type do
       :email ->
+        Logger.info("#{__MODULE__}: Want to send :recovery notification for alert #{alert.id}")
         Email.send(check, alert, :up)
         Alert.update_last_sent(alert, Timex.now())
         Check.update_last_alerted(check, :nominal) 
