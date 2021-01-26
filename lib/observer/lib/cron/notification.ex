@@ -15,11 +15,9 @@ defmodule Observer.Cron.Notification do
       check,
       name: String.to_atom("#{id}-notification")
     )
-    IO.inspect("in start link")
   end
 
   def init(check) do
-    IO.inspect("in init")
     Logger.debug("#{__MODULE__}: Initiailizing gen server for notification on check #{check.id} with interval")
     Process.send_after(self(), :notification, 1_000)
     {:ok, %{check: check}}
@@ -55,20 +53,31 @@ defmodule Observer.Cron.Notification do
   end
 
   def determine_type_to_send(%{state: current_state, last_alerted_for: last_state} = check) do
-    if negative?(current_state) and positive?(last_state) do
-      {:ok, :down}
+    case {get_sentiment(current_state), get_sentiment(last_state)} do
+      {:negative, :positive} -> {:ok, :down}
+      {:positive, :negative} -> {:ok, :recovery}
+      {:negative, :negative} -> {:ok, :noop}
+      {:positive, :positive} -> {:ok, :noop}
+      {:positive, :unset} -> {:ok, :noop}
+      {:negative, :unset} -> {:ok, :down}
+      {:unknown, _} -> {:ok, :noop}
+      {_, :unknown} -> {:ok, :noop}
     end
+  end
 
-    if positive?(current_state) and negative?(last_state) do
-      {:ok, :recovery} 
-    end
-
-    if negative?(current_state) and negative?(last_state) do
-      {:ok, :noop}
-    end
-
-    if positive?(current_state) and positive?(last_state) do
-      {:ok, :noop}
+  def get_sentiment(state) do
+    if negative?(state) do
+      :negative
+    else
+      if positive?(state) do
+        :positive
+      else
+        if unset?(state) do
+          :unset
+        else
+          :unknown
+        end
+      end
     end
   end
 
@@ -78,6 +87,14 @@ defmodule Observer.Cron.Notification do
 
   def positive?(state) do
     Enum.member?(@positive_states, state)
+  end
+
+  def unset?(state) do
+    if is_nil(state) or state == "" do
+      true
+    else
+      false
+    end
   end
 
   def send_notification(:down, check, alert) do
