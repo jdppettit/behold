@@ -14,19 +14,6 @@ COPY mix.exs mix.lock ./
 RUN mix deps.get
 
 ############################################################
-FROM node:8.11.4 as asset-builder
-
-ENV HOME=/opt/app
-WORKDIR $HOME
-
-COPY --from=asset-builder-mix-getter $HOME/deps $HOME/deps
-
-WORKDIR $HOME/assets
-COPY assets/ ./
-RUN npm install
-RUN ./node_modules/brunch/bin/brunch build --production
-
-############################################################
 FROM bitwalker/alpine-elixir-phoenix:latest
 
 RUN apk add --no-cache \
@@ -48,8 +35,6 @@ COPY priv/ ./priv
 ENV MIX_ENV=prod
 
 RUN mix do deps.get --only $MIX_ENV, deps.compile, compile
-
-COPY --from=asset-builder $HOME/priv/static/ $HOME/priv/static/
 
 RUN mix phx.digest
 
