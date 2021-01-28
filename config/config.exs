@@ -7,7 +7,8 @@ use Mix.Config
 
 # General application configuration
 config :behold,
-  ecto_repos: [Behold.Repo]
+  ecto_repos: [Behold.Repo],
+  email_module: Observer.Notification.Email
 
 # Configures the endpoint
 config :behold, BeholdWeb.Endpoint,
@@ -17,11 +18,8 @@ config :behold, BeholdWeb.Endpoint,
   pubsub: [name: Behold.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
-# Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:user_id]
 
-# Import environment specific config. This must remain at the bottom
-# of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"

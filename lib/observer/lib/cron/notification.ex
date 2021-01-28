@@ -6,6 +6,7 @@ defmodule Observer.Cron.Notification do
   alias Behold.Models.{Check, Alert}
   alias Observer.Notification.{Email, SMS}
 
+  @email_module Application.get_env(:behold, :email_module, Email)
   @negative_states [:warning, "warning", :critical, "critical"]
   @positive_states [:nominal, "nominal"]
   
@@ -101,7 +102,7 @@ defmodule Observer.Cron.Notification do
     case alert.type do
       :email ->
         Logger.info("#{__MODULE__}: Want to send :down notification for alert #{alert.id}")
-        Email.send(check, alert, :down)
+        @email_module.send(check, alert, :down)
         Alert.update_last_sent(alert, Timex.now())
         Check.update_last_alerted(check, :critical)
       :sms ->
@@ -117,7 +118,7 @@ defmodule Observer.Cron.Notification do
     case alert.type do
       :email ->
         Logger.info("#{__MODULE__}: Want to send :recovery notification for alert #{alert.id}")
-        Email.send(check, alert, :up)
+        @email_module.send(check, alert, :up)
         Alert.update_last_sent(alert, Timex.now())
         Check.update_last_alerted(check, :nominal) 
       :sms ->

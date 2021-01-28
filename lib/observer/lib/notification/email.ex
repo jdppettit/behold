@@ -1,3 +1,7 @@
+defmodule Observer.Notification.EmailBehaviour do
+ @callback send(check::Map, alert::Map, type::Atom) :: {:ok, term()}
+end
+
 defmodule Observer.Notification.Email do
   require Logger
 
@@ -5,6 +9,7 @@ defmodule Observer.Notification.Email do
 
   import Bamboo.Email
 
+  @impl Observer.Notification.EmailBehaviour
   def send(check, alert, :down) do
     new_email(
       to: alert.target,
@@ -37,6 +42,7 @@ defmodule Observer.Notification.Email do
     |> Observer.Common.Mailer.deliver_now()
   end
 
+  @impl Observer.Notification.EmailBehaviour
   def send(check, alert, :up) do
     new_email(
       to: alert.target,

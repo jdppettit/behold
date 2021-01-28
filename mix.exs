@@ -54,7 +54,8 @@ defmodule Behold.Mixfile do
       {:jason, "~> 1.1"},
       {:prometheus_ex, "~> 3.0"},
       {:logglix, git: "https://github.com/silverp1/logglix"},
-      {:prometheus_plugs, "~> 1.1"}
+      {:prometheus_plugs, "~> 1.1"},
+      {:mox, "~> 1.0", only: :test}
     ]
   end
 
