@@ -10,7 +10,17 @@ defmodule Behold.Mixfile do
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
       start_permanent: Mix.env == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      releases: [
+        behold_api: [
+          include_erts: true,
+          version: "0.0.1",
+          include_executables_for: [:unix],
+          applications: [
+            behold: :permanent
+          ]
+        ]
+      ]
     ]
   end
 
@@ -55,7 +65,8 @@ defmodule Behold.Mixfile do
       {:prometheus_ex, "~> 3.0"},
       {:logglix, git: "https://github.com/silverp1/logglix"},
       {:prometheus_plugs, "~> 1.1"},
-      {:mox, "~> 1.0", only: :test}
+      {:mox, "~> 1.0", only: :test},
+      {:libcluster, "~> 3.2"}
     ]
   end
 

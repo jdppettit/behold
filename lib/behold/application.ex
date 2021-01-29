@@ -4,8 +4,22 @@ defmodule Behold.Application do
   def start(_type, _args) do
     import Supervisor.Spec
 
+    topologies = [
+      kubernetes: [
+        strategy: Elixir.Cluster.Strategy.Kubernetes,
+        config: [
+          mode: :ip,
+          kubernetes_node_basename: "behold",
+          kubernetes_selector: "app=behold-api",
+          kubernetes_namespace: "behold",
+          polling_interval: 10_000
+        ]
+      ]
+    ]
+
     # Define workers and child supervisors to be supervised
     children = [
+      #{Cluster.Supervisor, [topologies, [name: Behold.ClusterSupervisor]]},
       # Start the Ecto repository
       supervisor(Behold.Repo, []),
       # Start the endpoint when the application starts

@@ -1,0 +1,6 @@
+FROM bitwalker/alpine-elixir-phoenix:latest
+
+ENV PORT=4040
+
+ADD _build/deploy/rel /opt/app
+

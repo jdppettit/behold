@@ -38,4 +38,4 @@ RUN mix do deps.get --only $MIX_ENV, deps.compile, compile
 
 RUN mix phx.digest
 
-CMD ["mix", "phx.server"]
+CMD ["elixir", "--sname", "behold-api", "-S", "mix", "phx.server"]
