@@ -66,7 +66,8 @@ defmodule Behold.Mixfile do
       {:logglix, git: "https://github.com/silverp1/logglix"},
       {:prometheus_plugs, "~> 1.1"},
       {:mox, "~> 1.0", only: :test},
-      {:libcluster, "~> 3.2"}
+      {:libcluster, "~> 3.2"},
+      {:gelfx, "~> 1.0"}
     ]
   end
 

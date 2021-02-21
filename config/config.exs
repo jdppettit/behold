@@ -22,4 +22,12 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:user_id]
 
+config :logger, backends: [:console, Gelfx]
+
+config :logger, Gelfx,
+  host: "graylog.pettit.home",
+  hostname: "behold-api",
+  protocol: :tcp,
+  level: :debug
+
 import_config "#{Mix.env}.exs"
