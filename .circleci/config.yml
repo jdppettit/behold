@@ -1,4 +1,9 @@
 version: 2
+
+defaults: &defaults
+  environment:
+    REGISTRY: 'registry.pettitservers.com:5000/behold-api'  
+
 jobs:
   test:
     working_directory: ~/behold
@@ -26,6 +31,48 @@ jobs:
       - run:
           name: Execute tests
           command: mix test
+  build:
+    working_directory: ~/behold
+    docker: 
+      - image: circleci/elixir:1.8-otp-22-node-browsers-legacy
+    steps:
+      - checkout
+      - run:
+          name: Install hex
+          command: mix local.hex --force
+      - run:
+          name: Install rebar
+          command: mix local.rebar --force
+      - run:
+          name: Install deps
+          command: mix deps.get
+      - run:
+          name: Build application
+          command: mix release
+      - run:
+          name: Build docker image
+          command: |
+            git clean -x -f -d
+            docker build -t $REGISTRY/behold-api -f Dockerfile.releases .
+      - run:
+          name: Push image as circle hash
+          command: |
+            docker tag $REGISTRY/behold-api $REGISTRY/behold-api:$CIRCLE_SHA1
+            docker push $REGISTRY/behold-api:$CIRCLE_SHA1
+      - run:
+          name: Pull circle hash
+          command: |
+            docker pull $REGISTRY/behold-api:$CIRCLE_SHA1
+      - run:
+          name: Update to latest and push
+          command: |
+            # tag
+            docker tag $REGISTRY/behold-api:$CIRCLE_SHA1 $REGISTRY/behold-api:latest
+
+            # push
+            docker push $REGISTRY/behold-api:latest
+
+
 
 workflows:
   version: 2
