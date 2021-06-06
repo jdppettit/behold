@@ -19,7 +19,7 @@ defmodule Behold.Application do
 
     # Define workers and child supervisors to be supervised
     children = [
-      #{Cluster.Supervisor, [topologies, [name: Behold.ClusterSupervisor]]},
+      {Cluster.Supervisor, [topologies, [name: Behold.ClusterSupervisor]]},
       # Start the Ecto repository
       supervisor(Behold.Repo, []),
       # Start the endpoint when the application starts
